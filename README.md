@@ -1,6 +1,6 @@
 Verify
 ========
-	Nexmo Verify SDK for Android.
+	Nexmo Verify SDK(beta version) for Android.
 Nexmo Verify enables you to verify whether one of your end users has access to a specific phone number by challenging them with
 a PIN code to enter into your application or website. This PIN code is delivered by Nexmo via SMS and/or TTS (an automated Text
 To Speech) call. Your end users then enter this code into your application and subsequently, you can check through Verify if 
@@ -13,10 +13,31 @@ various steps required to verify your users.
 Download
 ========
 
-Download [the latest JAR][1]
+Clone this repository and reference the local aar file.
+In a file explorer (not Android Studio), drag the verify-1.0.0-beta.aar file into the /app/libs directory
+in your project’s root directory.
+
+In Android Studio, edit the build.gradle file in the app directory (it can also be labelled as Module: app)
+and change its contents to the following:
+```java
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs 'libs'
+    }
+}
+```
+Then reference the library in the dependency section:
+```java
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+compile 'com.google.code.gson:gson:2.3'
+compile 'com.nexmo.sdk:verify-beta@aar'
+```
+Don’t forget to add the flatDir entry to the repositories section. Otherwise Gradle will not be able to locate the aar.
 
 Verify Android SDK requires at minimum Android 2.1.
-
 
 Getting Started
 ==============
@@ -37,9 +58,8 @@ import com.nexmo.sdk.NexmoClient;
 import com.nexmo.sdk.core.client.ClientBuilderException;
 import com.nexmo.sdk.verify.client.VerifyClient;
 
-NexmoClient nexmoClient = null;
 try {
-	nexmoClient = new NexmoClient.NexmoClientBuilder()
+	NexmoClient nexmoClient = new NexmoClient.NexmoClientBuilder()
                     .context(applicationContext)
                     .applicationId(APPLICATION_ID) //your application key
                     .sharedSecretKey(SHARED_KEY) //your application secret
@@ -102,6 +122,7 @@ Verify SDK maintains states of Verified users and will generate an SMS to verify
 users remain verified for 30 days. This will be customisable in a future version of the library to suit your needs - if a user 
 should be reverified everytime, never, or a custom duration (other than 30 days) in between.
 
+Please note that sensitive user details, like the phone number will NOT be stored locally at any time.
 
 License
 =======
@@ -114,11 +135,10 @@ Licensed only under the Nexmo Verify SDK License Agreement (the "License") locat
 
 By downloading or otherwise using our software or services, you acknowledge
 that you have read, understand and agree to be bound by the 
-[Nexmo Verify SDK License Agreement][2] and [Privacy Policy][3].
+[Nexmo Verify SDK License Agreement][1] and [Privacy Policy][2].
     
 You may not use, exercise any rights with respect to or exploit this SDK,
 or any modifications or derivative works thereof, except in accordance with the License.
 
- [1]: https://docs.nexmo.com/index.php/pre-built-libraries
- [2]: https://www.nexmo.com/terms-use/verify-sdk/
- [3]: https://www.nexmo.com/privacy-policy/
+ [1]: https://www.nexmo.com/terms-use/verify-sdk/
+ [2]: https://www.nexmo.com/privacy-policy/
