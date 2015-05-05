@@ -14,7 +14,7 @@ Download
 ========
 
 Clone this repository and reference the local aar file.
-In a file explorer (not Android Studio), drag the verify-1.0.0-beta.aar file into the /app/libs directory
+In a file explorer (not Android Studio), drag the verify-beta.aar file into the /app/libs directory
 in your project’s root directory.
 
 In Android Studio, edit the build.gradle file in the app directory (it can also be labelled as Module: app)
