@@ -32,7 +32,6 @@ Then reference the library in the dependency section:
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-compile 'com.google.code.gson:gson:2.3'
 compile 'com.nexmo.sdk:verify-beta@aar'
 ```
 Don’t forget to add the flatDir entry to the repositories section. Otherwise Gradle will not be able to locate the aar.
