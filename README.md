@@ -54,8 +54,12 @@ Getting Started
 Creating a new Nexmo Client:
 ```java
 import com.nexmo.sdk.NexmoClient;
+
 import com.nexmo.sdk.core.client.ClientBuilderException;
+
 import com.nexmo.sdk.verify.client.VerifyClient;
+import com.nexmo.sdk.verify.event.VerifyClientListener;
+import com.nexmo.sdk.verify.event.VerifyError;
 
 try {
 	NexmoClient nexmoClient = new NexmoClient.NexmoClientBuilder()
@@ -87,7 +91,7 @@ verifyClient.addVerifyListener(new VerifyClientListener() {
         }
 
         @Override
-        public void onError(VerifyClient verifyClient, com.nexmo.sdk.verify.event.VerifyError errorCode) {
+        public void onError(VerifyClient verifyClient, VerifyError errorCode) {
         }
     });
 ```
