@@ -13,7 +13,8 @@ various steps required to verify your users.
 Download
 ========
 
-Clone this repository and reference the local aar file.
+Clone this repository and reference the local aar file. (Once the project is out of Limited Beta, this step wouldn't be
+necessary.)
 In a file explorer (not Android Studio), drag the verify-beta.aar file into the /app/libs directory
 in your project’s root directory.
 
@@ -45,10 +46,10 @@ Getting Started
    https://dashboard.nexmo.com/register
 2. In order to safeguard your Nexmo credentials, all interaction between your application and Nexmo services requires an 
    Application Key and Shared Secret to be configured per application that you are building the SDK into.
-   If you don't have one yet, please send us an email at: productfeedback@nexmo.com and we will set up an application ID and 
-   a Shared Secret Key for your application.
-   We're working to allow you to setup a new Application using the Dashboard where you can obtain an ApplicationId and 
-   SharedSecretKey - Watch out for it in an upcoming update.
+   As we are in the early stages of the Beta, please send us an email at: productfeedback@nexmo.com and we will set up an 
+   application ID and a Shared Secret Key for your application.
+   We're working to allow you to setup a new Application using the Customer Dashboard where you will be able to obtain an
+   ApplicationId and SharedSecretKey - Watch out for it in an upcoming update.
 3. Download the Nexmo Verify SDK (as instructed above).
 
 Creating a new Nexmo Client:
@@ -121,9 +122,14 @@ verifyClient.checkPinCode("1234");
 A successful verification will be completed once the VerifyClientListener.onUserVerified(VerifyClient verifyClient) event is 
 invoked.
 
-Verify SDK maintains states of Verified users and will generate an SMS to verify a user if the user is unverified. By default,
-users remain verified for 30 days. This will be customisable in a future version of the library to suit your needs - if a user 
-should be reverified everytime, never, or a custom duration (other than 30 days) in between.
+Verify SDK generates an SMS to verify a user if the user is unverified. Once users are verified, Verify maintains this state
+on the server. By default, any change in the combination - Device ID + Application ID + Phone Number - is considered a new user
+and will be explicitly verified by 2FA. Once verified, users remain verified on the server for 30 days. We're working on 
+enabling the following customisations in a future version of the library:
+- If we should disregard either or both of Device ID and Application ID 
+- if a user should be reverified everytime, never, or a custom duration (other than 30 days) in between
+- Query the state of a user on the server
+- Change the state of the user object from Verified to Unverified, Blacklisted etc.
 
 Please note that sensitive user details, like the phone number will NOT be stored locally at any time.
 
