@@ -14,7 +14,7 @@ Download
 ========
 
 Clone this repository and reference the local aar file.
-In a file explorer (not Android Studio), drag the verify-beta.aar file into the /app/libs directory
+In a file explorer (not Android Studio), drag the verify-beta0.2.aar file into the /app/libs directory
 in your project’s root directory.
 
 In Android Studio, edit the build.gradle file in the app directory (it can also be labelled as Module: app)
@@ -32,11 +32,21 @@ Then reference the library in the dependency section:
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-compile 'com.nexmo.sdk:verify-beta@aar'
+compile 'com.nexmo.sdk:verify-beta0.2@aar'
 ```
 Don’t forget to add the flatDir entry to the repositories section. Otherwise Gradle will not be able to locate the aar.
 
 Verify Android SDK requires at minimum Android 2.1.
+
+VerifySample
+==============
+Import the VerifySample application into Android Studio.
+Set your applicationId and sharedSecretKey as meta-data in AndroidManifest.xml file.
+```xml
+        <meta-data android:name="applicationId" android:value="yourApplicationId" />
+        <meta-data android:name="sharedSecretKey" android:value="yourSharedSecretKey" />
+```
+Run the sample on your handset, using your own phone number.
 
 Getting Started
 ==============
@@ -61,9 +71,10 @@ import com.nexmo.sdk.verify.client.VerifyClient;
 import com.nexmo.sdk.verify.event.VerifyClientListener;
 import com.nexmo.sdk.verify.event.VerifyError;
 
+Context context = getApplicationContext();
 try {
 	NexmoClient nexmoClient = new NexmoClient.NexmoClientBuilder()
-                    .context(applicationContext)
+                    .context(context)
                     .applicationId(APPLICATION_ID) //your application key
                     .sharedSecretKey(SHARED_KEY) //your application secret
                     .build();
@@ -83,15 +94,19 @@ Remember to register for receiving verify status events, in case you want to upd
 ```java
 verifyClient.addVerifyListener(new VerifyClientListener() {
         @Override
-        public void onVerifyInProgress(VerifyClient verifyClient) {
+        public void onVerifyInProgress(final VerifyClient verifyClient) {
         }
 
         @Override
-        public void onUserVerified(VerifyClient verifyClient) {
+        public void onUserVerified(final VerifyClient verifyClient) {
         }
 
         @Override
-        public void onError(VerifyClient verifyClient, VerifyError errorCode) {
+        public void onError(final VerifyClient verifyClient, final com.nexmo.sdk.verify.event.VerifyError errorCode) {
+        }
+
+        @Override
+        public void onException(final IOException exception) {
         }
     });
 ```
@@ -102,23 +117,16 @@ verifyClient.getVerifiedUser("GB", "07000000000");
 Even if a user enters the phone number with the country code, the library will determine the correct internationalised 
 phone number for use.
 
-If you would like to have the library read the phone number from the SIM card in the phone, you can also use:
-```java
-verifyClient.getVerifiedUser();
-```
-However, please note that if the phone number cannot be read from the SIM, this method will result in an error. 
-In a future iteration, you would be able to pass an international number directly as well (as opposed to country and local no.)
+When the verification is successfully started VerifyClientListener.onVerifyInProgress(final VerifyClient verifyClient) is invoked.
 
-When the verification is successfully started VerifyClientListener.onVerifyInProgress(VerifyClient verifyClient) is invoked.
-
-If the verification cannot be started VerifyClientListener.onError(VerifyClient verifyClient, VerifyError errorCode); is invoked describing the error.
+If the verification cannot be started VerifyClientListener.onError(final VerifyClient verifyClient, final com.nexmo.sdk.verify.event.VerifyError errorCode); is invoked describing the error.
 
 Anytime the PIN code has been received by the end user, it should be supplied to the verify client:
 ```java
 verifyClient.checkPinCode("1234");
 ```
 
-A successful verification will be completed once the VerifyClientListener.onUserVerified(VerifyClient verifyClient) event is 
+A successful verification will be completed once the VerifyClientListener.onUserVerified(final VerifyClient verifyClient) event is 
 invoked.
 
 Verify SDK maintains states of Verified users and will generate an SMS to verify a user if the user is unverified. By default,
