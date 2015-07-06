@@ -11,7 +11,7 @@
  * with the License.
  */
 
-package com.nexmo.sdk.core.user;
+package com.nexmo.sdk.verify.event;
 
 import com.nexmo.sdk.verify.core.service.BaseService;
 
@@ -31,10 +31,14 @@ public enum UserStatus {
     /** When user is in pending state, the verify flow has been initiated. However, this doesn't ensure the token remains valid. */
     USER_PENDING(BaseService.USER_PENDING),
     USER_VERIFIED(BaseService.USER_VERIFIED),
+    /** User is in {@link UserStatus#USER_UNVERIFIED} status only when an explicit {@link com.nexmo.sdk.verify.client.VerifyClient#command(String, String, Command, CommandListener)}
+     * with {@link com.nexmo.sdk.verify.event.Command#LOGOUT} action was invoked for an already verified user.
+     */
+    USER_UNVERIFIED(BaseService.USER_UNVERIFIED),
     USER_FAILED(BaseService.USER_FAILED),
     USER_EXPIRED(BaseService.USER_EXPIRED),
     USER_BLACKLISTED(BaseService.USER_BLACKLISTED),
-    USER_UNKNOWN("unknown");
+    USER_UNKNOWN(BaseService.USER_UNKNOWN);
 
     private String value;
 

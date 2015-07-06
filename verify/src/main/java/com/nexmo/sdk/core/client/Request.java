@@ -29,11 +29,10 @@ public class Request {
     private final String method;
     private final TreeMap<String, String> params;
 
-    public Request(NexmoClient.ENVIRONMENT_HOST url,
-                   String secretKey,
-                   String method,
-                   Map<String,
-                   String> params) {
+    public Request(final NexmoClient.ENVIRONMENT_HOST url,
+                   final String secretKey,
+                   final String method,
+                   final Map<String,String> params) {
         this.url = url;
         this.secretKey = secretKey;
         this.method = method;

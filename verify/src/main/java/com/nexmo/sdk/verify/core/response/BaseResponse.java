@@ -17,7 +17,7 @@ import com.google.gson.annotations.SerializedName;
 
 import com.nexmo.sdk.core.client.ResultCodes;
 import com.nexmo.sdk.verify.core.service.BaseService;
-import com.nexmo.sdk.core.user.UserStatus;
+import com.nexmo.sdk.verify.event.UserStatus;
 
 /**
  * Generic class for handling all the responses from Nexmo Number SDK Service.
@@ -75,6 +75,8 @@ public class BaseResponse {
             return UserStatus.USER_EXPIRED;
         else if (userStatus.equals(BaseService.USER_BLACKLISTED))
             return UserStatus.USER_BLACKLISTED;
+        else if (userStatus.equals(BaseService.USER_UNVERIFIED))
+            return UserStatus.USER_UNVERIFIED;
         else return UserStatus.USER_UNKNOWN;
     }
 

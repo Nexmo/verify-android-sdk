@@ -14,6 +14,8 @@
 package com.nexmo.sdk.verify.event;
 
 import com.nexmo.sdk.verify.client.VerifyClient;
+import com.nexmo.sdk.verify.core.event.GenericExceptionListener;
+
 
 /**
  * A VerifyClientListener handles all verify related events.
@@ -42,24 +44,29 @@ import com.nexmo.sdk.verify.client.VerifyClient;
  * <pre>
  *     myVerifyClient.addVerifyClientListener(new VerifyClientListener() {
  *         &#64;Override
- *         public void onVerifyInProgress(VerifyClient verifyClient) {
+ *         public void onVerifyInProgress(final VerifyClient verifyClient) {
  *              // Update the application UI here if needed.
  *              // The user should received the PIN code anytime now.
  *         }
  *
  *         &#64;Override
- *         public void onUserVerified(VerifyClient verifyClient) {
+ *         public void onUserVerified(final VerifyClient verifyClient) {
  *              // Update the application UI here if needed.
  *         }
  *
  *         &#64;Override
- *         public void onError(VerifyClient verifyClient, VerifyError errorCode) {
+ *         public void onError(final VerifyClient verifyClient, final com.nexmo.sdk.verify.event.VerifyError errorCode) {
  *              // Update the application UI here if needed.
+ *         }
+ *
+ *         &#64;Override
+ *         public void onException(final IOException exception) {
+ *              // Update the application UI here if needed. Most probably there is a network connectivity exception.
  *         }
  *     }
  * </pre>
  */
-public interface VerifyClientListener {
+public interface VerifyClientListener extends GenericExceptionListener {
 
     /**
      * Called when a verify action has been triggered and the user is expected to receive the PIN code.
@@ -83,6 +90,7 @@ public interface VerifyClientListener {
      * @param verifyClient The verify client that triggered a new verify.
      * @param errorCode The {@link VerifyError} codes to describe the error.
      */
-    public void onError(final VerifyClient verifyClient, final VerifyError errorCode);
+    public void onError(final VerifyClient verifyClient,
+                        final com.nexmo.sdk.verify.event.VerifyError errorCode);
 
 }

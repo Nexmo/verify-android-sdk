@@ -26,13 +26,16 @@ import android.util.Log;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
+import com.nexmo.sdk.BuildConfig;
 import com.nexmo.sdk.NexmoClient;
 
 import com.nexmo.sdk.core.client.Client;
 import com.nexmo.sdk.core.client.Request;
+import com.nexmo.sdk.core.client.Response;
 import com.nexmo.sdk.core.device.DeviceProperties;
 import com.nexmo.sdk.core.event.ServiceListener;
-import com.nexmo.sdk.core.client.Response;
+
+import com.nexmo.sdk.verify.core.event.token.BaseTokenServiceListener;
 import com.nexmo.sdk.verify.core.response.VerifyResponse;
 import com.nexmo.sdk.verify.core.request.VerifyRequest;
 
@@ -42,10 +45,12 @@ import com.nexmo.sdk.verify.event.VerifyError;
 /**
  * Verification Service that enables you to request Nexmo to kick off the verification process for the number you/the user has provided.
  */
-public class VerifyService extends BaseService<VerifyResponse> {
+public class VerifyService extends BaseService<VerifyResponse>
+                           implements BaseTokenServiceListener {
 
     private static final String TAG = VerifyService.class.getSimpleName();
     private static VerifyService instance = new VerifyService();
+    private VerifyRequest verifyRequest;
 
     public static VerifyService getInstance(){
         return instance;
@@ -54,11 +59,39 @@ public class VerifyService extends BaseService<VerifyResponse> {
     private VerifyService(){
     }
 
+    public void init(final VerifyRequest verifyRequest) {
+        synchronized(this) {
+            this.verifyRequest = verifyRequest;
+        }
+    }
+
+    public void updateToken(final String token) {
+        synchronized(this){
+            this.verifyRequest.setToken(token);
+        }
+    }
+
+    /**
+     * Initiate the task that triggers the http request.
+     * @param nexmoClient   The NexmoClient object that sends the request.
+     * @param listener      The internal listener.
+     * @return              True if the request has been initiated, False otherwise.
+     */
     @Override
-    public void start(final NexmoClient nexmoClient,
-                      final VerifyRequest request,
-                      final ServiceListener<VerifyResponse> listener) {
-        new VerifyTask(nexmoClient, listener).execute(request);
+    public boolean start(final NexmoClient nexmoClient,
+                         final ServiceListener<VerifyResponse> listener) {
+        if (nexmoClient == null || listener == null || this.verifyRequest == null) {
+            if (BuildConfig.DEBUG)
+                Log.d(TAG, "Cannot start request, missing params.");
+            return false;
+        }
+        setNexmoClient(nexmoClient);
+        setServiceListener(listener);
+        if (this.verifyRequest.hasToken())
+            new VerifyTask(nexmoClient, getServiceListener()).execute(this.verifyRequest);
+        else
+            TokenService.getInstance().start(nexmoClient, this);
+        return true;
     }
 
 
@@ -67,15 +100,50 @@ public class VerifyService extends BaseService<VerifyResponse> {
         return gson.fromJson(input, VerifyResponse.class);
     }
 
+    @Override
+    public void onToken(final String token) {
+        updateToken(token);
+
+        // verify can now be initiated.
+        new VerifyTask(getNexmoClient(), getServiceListener()).execute(this.verifyRequest);
+    }
+
+    /**
+     * The token request has been rejected.
+     *
+     * @param errorCode    The {@link com.nexmo.sdk.verify.event.VerifyError} codes to describe the error.
+     * @param errorMessage The message that describes the {@link com.nexmo.sdk.verify.event.VerifyError}.
+     */
+    @Override
+    public void onTokenError(final com.nexmo.sdk.verify.event.VerifyError errorCode,
+                             final String errorMessage) {
+        getServiceListener().onFail(errorCode,
+                                    errorMessage);
+    }
+
+    /**
+     * A request was timed out because of network connectivity exception.
+     * Triggered in case of network error, such as UnknownHostException or SocketTimeout exception.
+     *
+     * @param exception The exception.
+     */
+    @Override
+    public void onException(final IOException exception) {
+        // Network exception while getting a token.
+        getServiceListener().onException(exception);
+    }
+
     /**
      * Async task that is making a request for a new verify.
      */
     private class VerifyTask extends AsyncTask<VerifyRequest, Void, Response> {
         private ServiceListener<VerifyResponse> listener;
-        private InternalNetworkException exception;
+        private InternalNetworkException internalException;
+        private IOException networkException;
         private NexmoClient nexmoClient;
 
-        public VerifyTask(final NexmoClient nexmoClient, final ServiceListener<VerifyResponse> listener) {
+        public VerifyTask(final NexmoClient nexmoClient,
+                          final ServiceListener<VerifyResponse> listener) {
             this.nexmoClient = nexmoClient;
             this.listener = listener;
         }
@@ -90,7 +158,9 @@ public class VerifyService extends BaseService<VerifyResponse> {
             try {
                 return startVerifyRequest(verifyRequest);
             } catch (InternalNetworkException e) {
-                exception = e;
+                this.internalException = e;
+            } catch (IOException e) {
+                this.networkException = e;
             }
             return null;
         }
@@ -109,9 +179,7 @@ public class VerifyService extends BaseService<VerifyResponse> {
          */
         @SuppressWarnings({"UnusedDeclaration"})
         protected void onPostExecute(Response result) {
-            if(this.exception != null)
-                this.listener.onFail(VerifyError.INTERNAL_ERR, "IO Internal error.");
-            else if (result != null) {
+            if (result != null) {
                 VerifyResponse verifyResponse = parseJson(result.getBody());
                 // Check if the signature is set on the response header.
                 if (isSignatureInvalid(this.nexmoClient, verifyResponse, result))
@@ -119,6 +187,10 @@ public class VerifyService extends BaseService<VerifyResponse> {
                 else
                     this.listener.onResponse(verifyResponse);
             }
+            else if (this.internalException != null)
+                this.listener.onFail(VerifyError.INTERNAL_ERR, "IO Internal error.");
+            else if (this.networkException != null)
+                this.listener.onException(this.networkException);
         }
 
         /**
@@ -134,7 +206,7 @@ public class VerifyService extends BaseService<VerifyResponse> {
          * @return request response.
          * @throws InternalNetworkException If an internal sdk error occurs while parsing the response.
          */
-        private Response startVerifyRequest(final VerifyRequest verifyRequest) throws InternalNetworkException {
+        private Response startVerifyRequest(final VerifyRequest verifyRequest) throws IOException {
             Context appContext = nexmoClient.getContext();
             Map<String, String> requestParams = new TreeMap<>();
             requestParams.put(TokenService.PARAM_TOKEN, verifyRequest.getToken());
@@ -144,21 +216,21 @@ public class VerifyService extends BaseService<VerifyResponse> {
             requestParams.put(BaseService.PARAM_DEVICE_ID, DeviceProperties.getIMEI(appContext));
             requestParams.put(BaseService.PARAM_SOURCE_IP, DeviceProperties.getIPAddress(appContext));
             String deviceLanguage = DeviceProperties.getLanguage();
-            if (!TextUtils.isEmpty(deviceLanguage))
+            if(!TextUtils.isEmpty(deviceLanguage))
                 requestParams.put(BaseService.PARAM_LANGUAGE, deviceLanguage);
 
             Client client = new Client();
             try {
-                HttpURLConnection connection = client.initConnection(new Request(nexmoClient.getEnvironmentHost(),
-                                                                                nexmoClient.getSharedSecretKey(),
-                                                                                BaseService.METHOD_VERIFY,
-                                                                                requestParams));
+                HttpURLConnection connection = client.initConnection(new Request(nexmoClient.getEnvironmentHost(), nexmoClient.getSharedSecretKey(), BaseService.METHOD_VERIFY, requestParams));
                 Response response = client.execute(connection);
-                Log.d(TAG, " --VERIFY raw response-- " + response);
+                Log.d(TAG, "VERIFY raw response: " + response);
                 return response;
-            } catch (JsonIOException | JsonSyntaxException | IOException e ) {
+            } catch (JsonIOException | JsonSyntaxException e) {
                 Log.d(TAG, " Error parsing " + e);
-                throw new InternalNetworkException("VerifyService error parsing response " + e);
+                throw new InternalNetworkException(TAG + "Error parsing response " + e);
+            } catch (IOException e) {
+                Log.d(TAG, " Error network issue " + e);
+                throw new IOException(TAG + " Error establishing connection " + e);
             }
         }
     }

@@ -13,11 +13,14 @@
 
 package com.nexmo.sdk.verify.client;
 
+import java.io.IOException;
+
 /**
-* Generic internal error.
-* An error has occurred in the Nexmo platform whilst processing a request.
+* Generic network exception.
+* Caused due to either UnknownHostException or SocketTimeoutException while
+* processing requests.
 */
-public class InternalNetworkException extends Exception {
+public class InternalNetworkException extends IOException {
 
     /**
      * Constructs a new InternalNetworkException that includes the current stack trace.

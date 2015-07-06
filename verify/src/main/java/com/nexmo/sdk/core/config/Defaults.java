@@ -21,5 +21,6 @@ public class Defaults {
     public static final int MAX_ALLOWABLE_TIME_DELTA = 5 * 60 * 1000;
     public static final int CONNECTION_TIMEOUT = 15 * 1000;
     public static final int CONNECTION_READ_TIMEOUT = 10 * 1000;
+    public static final int MIN_CODE_LENGTH = 4;
 
 }

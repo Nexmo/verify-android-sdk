@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Verify Sample</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Verify Fragment strings -->
+    <string name="sign_in">Sign in</string>
+    <string name="sign_in_hint">Please enter your phone number</string>
+    <string name="error_phone_number">The phone number is invalid.</string>
+    <string name="enter_phone_number"> Phone number </string>
+
+    <!-- Check code Fragment strings -->
+    <string name="check_code_fragment_name">Check code</string>
+    <string name="info_message">Please enter the pin code you received</string>
+    <string name="enter_pin_code">Six-digit code</string>
+    <string name="check_code">Confirm</string>
+    <string name="error_code">The pin code length is too short.</string>
+
+</resources>

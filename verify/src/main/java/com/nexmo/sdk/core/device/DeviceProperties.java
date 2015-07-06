@@ -18,7 +18,13 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.util.Log;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 import java.util.Locale;
 
 /**
@@ -66,9 +72,28 @@ public class DeviceProperties {
             Context appContext = context.getApplicationContext();
 
             WifiManager manager = (WifiManager) appContext.getSystemService(Context.WIFI_SERVICE);
-            int ipAddress = manager.getConnectionInfo().getIpAddress();
-
-            return ((ipAddress>>24) & 0xFF) + "." + ((ipAddress>>16) & 0xFF) + "." + ((ipAddress>>8) & 0xFF) + "." + ((ipAddress & 0xFF));
+            // Get the WiFi or cellular network IP address.
+            if (manager.isWifiEnabled()) {
+                int ipAddress = manager.getConnectionInfo().getIpAddress();
+                // Format the integer IP address to the numeric representation.
+                return ((ipAddress>>24) & 0xFF) + "." + ((ipAddress>>16) & 0xFF) + "." + ((ipAddress>>8) & 0xFF) + "." + ((ipAddress & 0xFF));
+            } else {
+                try {
+                    for (Enumeration<NetworkInterface> networks = NetworkInterface.getNetworkInterfaces(); networks.hasMoreElements();) {
+                        NetworkInterface networkInterface = networks.nextElement();
+                        for (Enumeration<InetAddress> ipAddresses = networkInterface.getInetAddresses(); ipAddresses.hasMoreElements();) {
+                            InetAddress inetAddress = ipAddresses.nextElement();
+                            // Ignore the loopback address.
+                            // // If only the loopback is available, it is not possible to do any requests to the service.
+                            if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+                                return inetAddress.getHostAddress();
+                            }
+                        }
+                    }
+                } catch (SocketException e) {
+                    Log.e(TAG, "Error getting the IP address." + e.getStackTrace());
+                }
+            }
         }
         return  null;
     }

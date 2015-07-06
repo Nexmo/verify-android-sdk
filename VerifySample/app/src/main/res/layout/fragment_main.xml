@@ -1,0 +1,56 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:weightSum="6"
+                android:orientation="vertical"
+                android:padding="@dimen/activity_horizontal_margin"
+                android:background="@color/nexmo_default_background">
+
+    <TextView
+        android:id="@+id/sign_in_tv"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:gravity="left|bottom"
+        android:paddingBottom="@dimen/activity_horizontal_margin"
+        android:textColor="@android:color/white"
+        android:text="@string/sign_in_hint"/>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="@dimen/activity_top_margin">
+
+        <Spinner
+            android:id="@+id/prefix_sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:layout_marginRight="@dimen/activity_view_spacing"
+            android:maxLength="3"/>
+
+        <EditText
+            android:id="@+id/number_et"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/prefix_sp"
+            android:gravity="left"
+            android:lines="1"
+            android:hint="@string/enter_phone_number"
+            android:textColor="@android:color/white"
+            android:imeOptions="actionDone"
+            android:inputType="number"
+            android:maxLength="13"/>
+        </RelativeLayout>
+
+    <Button
+        android:id="@+id/signin_bv"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/button"
+        android:text="@string/sign_in"
+        android:textColor="@android:color/black"/>
+
+</LinearLayout>

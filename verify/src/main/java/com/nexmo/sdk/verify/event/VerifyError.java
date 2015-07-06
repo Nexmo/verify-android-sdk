@@ -31,7 +31,7 @@ public enum VerifyError {
     PROVIDED_NUMBER_NOT_ACCEPTED,
     /**
      * SIM less device: SIM card not found. Please use the {@link com.nexmo.sdk.verify.client.VerifyClient#getVerifiedUser(String, String)}
-     *  method and supply params for phone number and country code for the verification to be initiated.
+     * method and supply params for phone number and country code for the verification to be initiated.
      */
     NUMBER_REQUIRED,
     /** User must be in pending status to be able to perform a PIN check. */
@@ -44,12 +44,42 @@ public enum VerifyError {
     USER_EXPIRED,
     /** Ongoing verification rejected. User blacklisted for verification. */
     USER_BLACKLISTED,
+    /** Current user cannot be found. This means there is no ongoing verification, or the last verification did not succeed. */
+    USER_UNKNOWN,
+    /** Ongoing verification has failed. This usually occurs when the wrong PIN code was send too many times. */
+    USER_FAILED,
     /** Throttled. Too many failed requests. */
     THROTTLED,
     /** Your account does not have sufficient credit to process this request. */
     QUOTA_EXCEEDED,
     /** Invalid app_id. Supplied app_id is not listed under your accepted application list. */
     INVALID_CREDENTIALS,
+    /** A search request is already in progress, please wait until completion. */
+    GET_VERIFIED_USER_ALREADY_STARTED,
+    /**
+     * Invalid user status for the command action.
+     * <ul>For example:
+     *  <li>Calling {@link com.nexmo.sdk.verify.client.VerifyClient#command(String, String, Command, CommandListener)}
+     *  with {@link com.nexmo.sdk.verify.event.Command#LOGOUT} action cannot be accomplished for an unverified user. </li>
+     *  <li>Calling {@link com.nexmo.sdk.verify.client.VerifyClient#command(String, String, Command, CommandListener)}
+     *  with {@link com.nexmo.sdk.verify.event.Command#CANCEL} action cannot be accomplished for a user that is not
+     *  in {@link com.nexmo.sdk.verify.event.UserStatus#USER_PENDING} state.</li>
+     * </ul>
+     */
+    INVALID_USER_STATUS_FOR_COMMAND,
+    /**
+     * Command is not permitted, reason can be:
+     * <ul>
+     *     <li>In case of {@link com.nexmo.sdk.verify.event.Command#CANCEL} command:
+     *     Verification requests cannot be canceled within the first 30 seconds.
+     *     You must wait at least 30s for the request to be allowed for cancellation.</li>
+     *     <li>In case of {@link com.nexmo.sdk.verify.event.Command#TRIGGER_NEXT_EVENT} command:
+     *     No more events are left to execute.
+     *     All the attempts to deliver the code for this request have been completed
+     *     and there are no more events to skip to.</li>
+     * </ul>
+     */
+    COMMAND_NOT_SUPPORTED,
     /** The SDK revision is not supported anymore. */
     SDK_REVISION_NOT_SUPPORTED,
     /** Current Android OS version is not supported. */

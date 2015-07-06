@@ -75,11 +75,11 @@ public class Client implements ConnectionClient {
         connection.setReadTimeout(Defaults.CONNECTION_READ_TIMEOUT);
         connection.setConnectTimeout(Defaults.CONNECTION_TIMEOUT);
         connection.setDoInput(true);
-        connection.setDoOutput(false);
-        connection.setRequestProperty(HTTP.CONTENT_ENCODING, Config.PARAMS_ENCODING);
-        connection.setRequestProperty(BaseService.OS_FAMILY, Config.OS_ANDROID);
-        connection.setRequestProperty(BaseService.OS_REVISION, DeviceProperties.getApiLevel());
-        connection.setRequestProperty(BaseService.SDK_REVISION, Config.SDK_REVISION_CODE);
+        connection.setDoOutput(true);
+        connection.addRequestProperty(HTTP.CONTENT_ENCODING, Config.PARAMS_ENCODING);
+        connection.addRequestProperty(BaseService.OS_FAMILY, Config.OS_ANDROID);
+        connection.addRequestProperty(BaseService.OS_REVISION, DeviceProperties.getApiLevel());
+        connection.addRequestProperty(BaseService.SDK_REVISION, Config.SDK_REVISION_CODE);
 
         return connection;
     }

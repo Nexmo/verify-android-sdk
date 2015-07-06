@@ -17,85 +17,70 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.nexmo.sdk.core.user.UserStatus;
+import com.nexmo.sdk.verify.event.UserStatus;
 import com.nexmo.sdk.verify.core.response.BaseResponse;
 
 /**
  * Wrapper that encapsulates the current verify request information.
  */
-public final class VerifyRequest implements Parcelable {
+public class VerifyRequest extends BaseRequest implements Parcelable {
 
-    private String countryCode;
-    private String phoneNumber;
-    private String token;
     private UserStatus userStatus;
     private String pinCode;
 
+    public VerifyRequest(final String countryCode, final String phoneNumber) {
+        super(countryCode, phoneNumber);
+    }
+
     public VerifyRequest() {
-        userStatus = UserStatus.USER_NEW;
+        this.userStatus = UserStatus.USER_NEW;
     }
 
     public VerifyRequest(Parcel input) {
-        this.countryCode = input.readString();
-        this.phoneNumber = input.readString();
-        this.token = input.readString();
+        super(input);
         this.userStatus = BaseResponse.getUserStatus(input.readString());
         this.pinCode = input.readString();
+    }
+
+    public VerifyRequest(final String countryCode,
+                         final String phoneNumber,
+                         final String token,
+                         final UserStatus userStatus,
+                         final String pinCode) {
+        super(countryCode, phoneNumber, token);
+        this.userStatus = userStatus;
+        this.pinCode = pinCode;
     }
 
     /**
      * Checks if the required information for a pin check is available.
      */
     public boolean isPinCheckAvailable() {
-        if (TextUtils.isEmpty(this.countryCode))
+        if (TextUtils.isEmpty(super.getCountryCode()))
             return false;
 
-        if (TextUtils.isEmpty(this.phoneNumber))
+        if (TextUtils.isEmpty(super.getPhoneNumber()))
             return false;
 
-        if (TextUtils.isEmpty(this.token))
+        if (TextUtils.isEmpty(super.getToken()))
             return false;
 
         return this.userStatus == UserStatus.USER_PENDING;
-    }
-
-    public String getCountryCode() {
-        return countryCode;
-    }
-
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public UserStatus getUserStatus() {
         return this.userStatus;
     }
 
-    public void setUserStatus(UserStatus userStatus) {
+    public void setUserStatus(final UserStatus userStatus) {
         this.userStatus = userStatus;
     }
 
     public String getPinCode() {
-        return pinCode;
+        return this.pinCode;
     }
 
-    public void setPinCode(String pinCode) {
+    public void setPinCode(final String pinCode) {
         this.pinCode = pinCode;
     }
 
@@ -117,9 +102,7 @@ public final class VerifyRequest implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
-        out.writeString(this.countryCode);
-        out.writeString(this.phoneNumber);
-        out.writeString(this.token);
+        super.writeToParcel(out, flags);
         out.writeString(this.userStatus.toString());
         out.writeString(this.pinCode);
     }
