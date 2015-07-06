@@ -19,10 +19,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 public class VerifyClientTest {
+
     private static final String TAG = VerifyClientTest.class.getSimpleName();
     private VerifyClient verifyClient;
     private final VerifyClientListener listener = new VerifyClientListener() {
@@ -36,6 +39,11 @@ public class VerifyClientTest {
 
         @Override
         public void onError(VerifyClient verifyClient, com.nexmo.sdk.verify.event.VerifyError errorCode) {
+        }
+
+        @Override
+        public void onException(IOException exception) {
+
         }
     };
 
@@ -52,13 +60,15 @@ public class VerifyClientTest {
     @Test
     public void testRemoveVerifyListener() throws Exception {
         verifyClient.addVerifyListener(listener);
-        assertTrue(TAG + " attached listener cannot be removed.", verifyClient.removeVerifyListener(listener));
+        assertTrue(TAG + " attached listener cannot be removed.",
+                   verifyClient.removeVerifyListener(listener));
     }
 
     @Test
     public void testRemoveAllVerifyListeners() throws Exception {
         verifyClient.removeVerifyListeners();
-        assertFalse(TAG + " listener still attached after removal.", verifyClient.removeVerifyListener(listener));
+        assertFalse(TAG + " listener still attached after removal.",
+                    verifyClient.removeVerifyListener(listener));
     }
 
 }

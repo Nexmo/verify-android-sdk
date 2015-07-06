@@ -36,6 +36,12 @@ public class ResultCodes {
     /** A wrong PIN code was provided too many times. */
     public static final int INVALID_CODE_TOO_MANY_TIMES = 17;
 
+    /**
+     * Verification requests cannot be canceled within the first 30 seconds.
+     * Trigger next event is also not permitted.
+     */
+    public static final int COMMAND_NOT_SUPPORTED = 19;
+
     /** Missing or invalid phone number. */
     public static final int INVALID_NUMBER = 53;
 
@@ -59,5 +65,11 @@ public class ResultCodes {
 
     /** Throttled. Too many failed requests. */
     public static final int REQUEST_REJECTED = 60;
+
+    /** Invalid user status for the command action. */
+    public static final int INVALID_USER_STATUS_FOR_COMMAND = 62;
+
+    /**  Logout is not available because the user is not in verified status. */
+    public static final int INVALID_USER_STATUS_FOR_LOGOUT = 63;
 
 }

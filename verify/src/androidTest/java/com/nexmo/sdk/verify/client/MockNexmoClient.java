@@ -41,6 +41,7 @@ public class MockNexmoClient {
     public NexmoClient getClient() {
         return nexmoClient;
     }
+
     public NexmoClient.ENVIRONMENT_HOST getClientHost() {
         return nexmoClient.getEnvironmentHost();
     }

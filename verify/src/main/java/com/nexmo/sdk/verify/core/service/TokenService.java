@@ -22,17 +22,19 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
+import com.nexmo.sdk.BuildConfig;
 import com.nexmo.sdk.NexmoClient;
 
 import com.nexmo.sdk.core.client.Client;
-import com.nexmo.sdk.core.event.ServiceListener;
-import com.nexmo.sdk.verify.core.request.VerifyRequest;
 import com.nexmo.sdk.core.client.Request;
-import com.nexmo.sdk.core.device.DeviceProperties;
 import com.nexmo.sdk.core.client.Response;
+import com.nexmo.sdk.core.device.DeviceProperties;
+import com.nexmo.sdk.verify.core.event.token.BaseTokenServiceListener;
 import com.nexmo.sdk.verify.core.response.TokenResponse;
 
 import com.nexmo.sdk.verify.client.InternalNetworkException;
@@ -41,7 +43,7 @@ import com.nexmo.sdk.verify.event.VerifyError;
 /**
  * Service that triggers a new token request against the SDK Service.
  */
-public class TokenService extends BaseService<TokenResponse> {
+public class TokenService {
 
     /** Log tag, apps may override it. */
     private static final String TAG = TokenService.class.getSimpleName();
@@ -49,6 +51,7 @@ public class TokenService extends BaseService<TokenResponse> {
     /** HTTP response parameters. */
     public static final String PARAM_TOKEN = "token";
     private static TokenService instance = new TokenService();
+    private static final Gson gson = new GsonBuilder().create();
 
     public static TokenService getInstance() {
         return instance;
@@ -57,15 +60,19 @@ public class TokenService extends BaseService<TokenResponse> {
     private TokenService(){
     }
 
-    @Override
-    public void start(final NexmoClient nexmoClient,
-                      final VerifyRequest request,
-                      final ServiceListener<TokenResponse> listener) {
+    public boolean start(final NexmoClient nexmoClient,
+                         final BaseTokenServiceListener listener) {
+        if (nexmoClient == null || listener == null) {
+            if (BuildConfig.DEBUG)
+                Log.d(TAG, "Cannot start request, missing params.");
+            return false;
+        }
+
         new TokenTask(nexmoClient, listener).execute();
+        return true;
     }
 
-    @Override
-    TokenResponse parseJson(final String input) throws JsonSyntaxException {
+    private TokenResponse parseJson(final String input) throws JsonSyntaxException {
         return gson.fromJson(input, TokenResponse.class);
     }
 
@@ -73,13 +80,15 @@ public class TokenService extends BaseService<TokenResponse> {
      * Token Task requests a new token generation.
      */
     private class TokenTask extends AsyncTask<Void, Void, Response> {
-        private ServiceListener<TokenResponse> listener;
-        private InternalNetworkException exception;
+        private BaseTokenServiceListener tokenListener;
+        private IOException network_exception;
+        private InternalNetworkException internal_exception;
         private NexmoClient nexmoClient;
 
-        public TokenTask(final NexmoClient nexmoClient, final ServiceListener<TokenResponse> listener) {
+        public TokenTask(final NexmoClient nexmoClient,
+                         final BaseTokenServiceListener listener) {
             this.nexmoClient = nexmoClient;
-            this.listener = listener;
+            this.tokenListener = listener;
         }
 
         /**
@@ -97,7 +106,10 @@ public class TokenService extends BaseService<TokenResponse> {
             try {
                 return getTokenRequest();
             } catch (InternalNetworkException e) {
-                exception = e;
+                internal_exception = e;
+            }
+            catch (IOException e) {
+                network_exception = e;
             }
             return null;
         }
@@ -116,16 +128,18 @@ public class TokenService extends BaseService<TokenResponse> {
          */
         @SuppressWarnings({"UnusedDeclaration"})
         protected void onPostExecute(Response result) {
-            if (this.exception != null)
-                this.listener.onFail(VerifyError.INTERNAL_ERR, "IO Internal error.");
-            else if (result != null) {
+            if (result != null) {
                 TokenResponse newToken = parseJson(result.getBody());
                 // Check if the signature is set on the response header.
-                if (isSignatureInvalid(this.nexmoClient, newToken, result))
-                    this.listener.onFail(VerifyError.INVALID_CREDENTIALS, "Invalid credentials.");
+                if (BaseService.isSignatureInvalid(this.nexmoClient, newToken, result))
+                    this.tokenListener.onTokenError(VerifyError.INVALID_CREDENTIALS, "Invalid credentials.");
                 else
-                    this.listener.onResponse(newToken);
+                    this.tokenListener.onToken(newToken.getToken());
             }
+            else if (this.internal_exception != null)
+                this.tokenListener.onTokenError(VerifyError.INTERNAL_ERR, "IO Internal error.");
+            else if (this.network_exception != null)
+                this.tokenListener.onException(this.network_exception);
         }
 
         /**
@@ -141,7 +155,7 @@ public class TokenService extends BaseService<TokenResponse> {
          * @return Request response, that also contains a short-lived new authorization token.
          * @throws InternalNetworkException If an internal sdk error occurs while parsing the response.
          */
-        private Response getTokenRequest() throws InternalNetworkException {
+        private Response getTokenRequest() throws IOException {
             Context appContext = nexmoClient.getContext();
 
             Map<String, String> requestParams = new TreeMap<>();
@@ -152,15 +166,19 @@ public class TokenService extends BaseService<TokenResponse> {
             Client client = new Client();
             try {
                 HttpURLConnection connection = client.initConnection(new Request(nexmoClient.getEnvironmentHost(),
-                                                                                nexmoClient.getSharedSecretKey(),
-                                                                                BaseService.METHOD_TOKEN,
-                                                                                requestParams));
+                                                                                 nexmoClient.getSharedSecretKey(),
+                                                                                 BaseService.METHOD_TOKEN,
+                                                                                 requestParams));
                 Response response = client.execute(connection);
-                Log.d(TAG, " --getToken raw response-- " + response);
+                Log.d(TAG, "Token raw response: " + response);
                 return response;
-            } catch (JsonIOException | JsonSyntaxException | IOException e) {
+            } catch (JsonIOException | JsonSyntaxException e) {
                 Log.d(TAG, " Error parsing " + e);
-                throw new InternalNetworkException(" Error parsing response " + e);
+                throw new InternalNetworkException(TAG + " Error parsing response " + e);
+            }
+            catch (IOException e) {
+                Log.d(TAG, " Error network issue " + e);
+                throw new IOException(TAG + " Error establishing connection " + e);
             }
         }
     }

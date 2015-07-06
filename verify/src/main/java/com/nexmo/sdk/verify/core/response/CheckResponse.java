@@ -16,7 +16,7 @@ package com.nexmo.sdk.verify.core.response;
 import com.google.gson.annotations.SerializedName;
 
 import com.nexmo.sdk.verify.core.service.BaseService;
-import com.nexmo.sdk.core.user.UserStatus;
+import com.nexmo.sdk.verify.event.UserStatus;
 
 /**
  * Class for marshaling/un marshaling verify check response JSons into PoJos.
@@ -35,6 +35,11 @@ public class CheckResponse extends BaseResponse {
      */
     public UserStatus getUserStatus() {
         return getUserStatus(this.userStatus);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + ", " + BaseService.PARAM_RESULT_USER_STATUS + ": " + this.userStatus;
     }
 
 }

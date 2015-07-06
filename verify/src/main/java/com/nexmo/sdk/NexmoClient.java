@@ -164,7 +164,7 @@ public class NexmoClient {
             if (this.context == null)
                 ClientBuilderException.appendExceptionCause(stringBuilder, "Context");
             if (TextUtils.isEmpty(this.sharedSecretKey))
-                ClientBuilderException.appendExceptionCause(stringBuilder, BaseService.RESPONSE_SIG);
+                ClientBuilderException.appendExceptionCause(stringBuilder, "SharedSecretKey");
             if (TextUtils.isEmpty(this.appId))
                 ClientBuilderException.appendExceptionCause(stringBuilder, BaseService.PARAM_APP_ID);
 

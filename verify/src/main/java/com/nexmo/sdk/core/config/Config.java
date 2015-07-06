@@ -24,10 +24,10 @@ public class Config {
     /** Used for applications deployed in production. */
     public static final String ENDPOINT_PRODUCTION = "https://api.nexmo.com/sdk/";
     /** Used during development and testing. Not available yet. */
-    public static final String ENDPOINT_SANDBOX= "";
+    public static final String ENDPOINT_SANDBOX = "";
 
     /** Current Nexmo SDK version. */
-    public static final String SDK_REVISION_CODE = "0.1";
+    public static final String SDK_REVISION_CODE = "0.2";
 
     /** Custom HTTP header. */
     public static final String OS_ANDROID = "ANDROID";

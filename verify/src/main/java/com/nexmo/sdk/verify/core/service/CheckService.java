@@ -25,10 +25,12 @@ import android.util.Log;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
+import com.nexmo.sdk.BuildConfig;
 import com.nexmo.sdk.NexmoClient;
 
 import com.nexmo.sdk.core.client.Client;
 import com.nexmo.sdk.core.event.ServiceListener;
+import com.nexmo.sdk.verify.core.event.token.BaseTokenServiceListener;
 import com.nexmo.sdk.verify.core.request.VerifyRequest;
 import com.nexmo.sdk.core.client.Request;
 import com.nexmo.sdk.core.device.DeviceProperties;
@@ -41,13 +43,15 @@ import com.nexmo.sdk.verify.client.InternalNetworkException;
 /**
  * Service that checks whether the PIN code received from your end user matches the one Nexmo has sent.
  */
-public class CheckService extends BaseService<CheckResponse> {
+public class CheckService extends BaseService<CheckResponse>
+                          implements BaseTokenServiceListener {
 
     private static final String TAG = VerifyService.class.getSimpleName();
 
     /** HTTP request parameters. */
     private static final String PARAM_CODE = "code";
     private static CheckService instance = new CheckService();
+    private VerifyRequest verifyRequest;
 
     public static CheckService getInstance() {
         return instance;
@@ -56,11 +60,40 @@ public class CheckService extends BaseService<CheckResponse> {
     private CheckService() {
     }
 
+    public void init(final VerifyRequest verifyRequest) {
+        synchronized(this) {
+            this.verifyRequest = verifyRequest;
+        }
+    }
+
     @Override
-    public void start(final NexmoClient nexmoClient,
-                      final VerifyRequest request,
+    public boolean start(final NexmoClient nexmoClient,
                       final ServiceListener<CheckResponse> listener) {
-        new CheckTask(nexmoClient, listener).execute(request);
+        if (nexmoClient == null || listener == null || this.verifyRequest == null) {
+            if (BuildConfig.DEBUG)
+                Log.d(TAG, "Cannot start request, missing params.");
+            return false;
+        }
+        setNexmoClient(nexmoClient);
+        setServiceListener(listener);
+
+        if (this.verifyRequest.hasToken())
+            new CheckTask(nexmoClient, listener).execute(this.verifyRequest);
+        else
+           TokenService.getInstance().start(nexmoClient, this);
+        return true;
+    }
+
+    /**
+     * Update the service of a new token.
+     *
+     * @param token The new token.
+     */
+    @Override
+    public void updateToken(String token) {
+        synchronized(this) {
+            this.verifyRequest.setToken(token);
+        }
     }
 
     @Override
@@ -69,18 +102,58 @@ public class CheckService extends BaseService<CheckResponse> {
     }
 
     /**
+     * Indicates there is a new token received.
+     *
+     * @param token The new token response.
+     */
+    @Override
+    public void onToken(final String token) {
+        updateToken(token);
+
+        // Check can now be initiated.
+        new CheckTask(getNexmoClient(), getServiceListener()).execute(this.verifyRequest);
+    }
+
+    /**
+     * The token request has been rejected.
+     *
+     * @param errorCode    The {@link com.nexmo.sdk.verify.event.VerifyError} codes to describe the error.
+     * @param errorMessage The message that describes the {@link com.nexmo.sdk.verify.event.VerifyError}.
+     */
+    @Override
+    public void onTokenError(final VerifyError errorCode,
+                             final String errorMessage) {
+        getServiceListener().onFail(errorCode,
+                                    errorMessage);
+    }
+
+    /**
+     * A request was timed out because of network connectivity exception.
+     * Triggered in case of network error, such as UnknownHostException or SocketTimeout exception.
+     *
+     * @param exception The exception.
+     */
+    @Override
+    public void onException(final IOException exception) {
+        // Network exception while getting a token.
+        getServiceListener().onException(exception);
+    }
+
+    /**
      * Token Task requests a new PIN code check.
      */
     private class CheckTask extends AsyncTask<VerifyRequest, Void, Response> {
         private ServiceListener<CheckResponse> listener;
-        private InternalNetworkException exception;
+        private InternalNetworkException internalException;
+        private IOException networkException;
         private NexmoClient nexmoClient;
 
-        public CheckTask(final NexmoClient nexmoClient, final ServiceListener<CheckResponse> listener) {
+        public CheckTask(final NexmoClient nexmoClient,
+                         final ServiceListener<CheckResponse> listener) {
             this.nexmoClient = nexmoClient;
             this.listener = listener;
-
         }
+
         /**
          * Runs on the UI thread before {@link #doInBackground}.
          *
@@ -97,7 +170,9 @@ public class CheckService extends BaseService<CheckResponse> {
             try {
                 return checkRequest(verifyRequest);
             } catch (InternalNetworkException e) {
-                exception = e;
+                this.internalException = e;
+            } catch (IOException e) {
+                this.networkException = e;
             }
             return null;
         }
@@ -116,9 +191,7 @@ public class CheckService extends BaseService<CheckResponse> {
          */
         @SuppressWarnings({"UnusedDeclaration"})
         protected void onPostExecute(Response result) {
-            if(this.exception != null)
-                this.listener.onFail(VerifyError.INTERNAL_ERR, "IO Internal error.");
-            else if (result != null) {
+            if (result != null) {
                 CheckResponse checkResponse = parseJson(result.getBody());
                 // Check if the signature is set on the response header.
                 if (isSignatureInvalid(this.nexmoClient, checkResponse, result))
@@ -126,6 +199,10 @@ public class CheckService extends BaseService<CheckResponse> {
                 else
                     this.listener.onResponse(checkResponse);
             }
+            else if(this.internalException != null)
+                this.listener.onFail(VerifyError.INTERNAL_ERR, "IO Internal error.");
+            else if (this.networkException != null)
+                this.listener.onException(this.networkException);
         }
 
         /**
@@ -143,7 +220,7 @@ public class CheckService extends BaseService<CheckResponse> {
          * @return request response.
          * @throws InternalNetworkException If an internal sdk error occurs while parsing the response.
          */
-        private Response checkRequest(final VerifyRequest verifyRequest) throws InternalNetworkException {
+        private Response checkRequest(final VerifyRequest verifyRequest) throws IOException {
             Context appContext = nexmoClient.getContext();
             Map<String, String> requestParams = new TreeMap<>();
             requestParams.put(TokenService.PARAM_TOKEN, verifyRequest.getToken());
@@ -161,11 +238,14 @@ public class CheckService extends BaseService<CheckResponse> {
                                                                                 BaseService.METHOD_CHECK,
                                                                                 requestParams));
                 Response response = client.execute(connection);
-                Log.d(TAG, " --CHECK raw response-- " + response);
+                Log.d(TAG, "CHECK raw response: " + response);
                 return response;
-            } catch (JsonIOException | JsonSyntaxException | IOException e) {
+            } catch (JsonIOException | JsonSyntaxException e) {
                 Log.d(TAG, " Error parsing " + e);
                 throw new InternalNetworkException(TAG + " Error parsing response " + e);
+            } catch (IOException e) {
+                Log.d(TAG, " Error network issue " + e);
+                throw new IOException(TAG + " Error establishing connection " + e);
             }
         }
     }

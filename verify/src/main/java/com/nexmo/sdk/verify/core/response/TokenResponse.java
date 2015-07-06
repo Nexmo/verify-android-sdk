@@ -15,6 +15,7 @@ package com.nexmo.sdk.verify.core.response;
 
 import com.google.gson.annotations.SerializedName;
 
+import com.nexmo.sdk.verify.core.service.BaseService;
 import com.nexmo.sdk.verify.core.service.TokenService;
 
 /**
@@ -29,6 +30,11 @@ public class TokenResponse extends BaseResponse {
 
     public String getToken() {
         return this.token;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + ", " + TokenService.PARAM_TOKEN + ": " + this.token;
     }
 
 }
