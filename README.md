@@ -1,5 +1,7 @@
 Verify
 ========
+
+[![Join the chat at https://gitter.im/Nexmo/verify-android-sdk](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Nexmo/verify-android-sdk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 	Nexmo Verify SDK(beta version) for Android.
 Nexmo Verify enables you to verify whether one of your end users has access to a specific phone number by challenging them with
 a PIN code to enter into your application or website. This PIN code is delivered by Nexmo via SMS and/or TTS (an automated Text
