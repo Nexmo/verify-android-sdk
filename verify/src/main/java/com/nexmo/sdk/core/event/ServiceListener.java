@@ -49,6 +49,7 @@ public abstract class ServiceListener<T> implements GenericExceptionListener {
             case ResultCodes.INVALID_NUMBER:
                 return VerifyError.INVALID_NUMBER;
             case ResultCodes.INVALID_CREDENTIALS:
+            case ResultCodes.BAD_APP_ID:
                 return VerifyError.INVALID_CREDENTIALS;
             case ResultCodes.OS_NOT_SUPPORTED:
                 return VerifyError.OS_NOT_SUPPORTED;

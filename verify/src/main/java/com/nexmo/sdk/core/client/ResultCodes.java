@@ -22,10 +22,16 @@ public class ResultCodes {
     public static final int RESULT_CODE_OK = 0;
 
     /** Invalid app_id. Supplied app_id is not listed under your accepted application list. */
-    public static final int INVALID_CREDENTIALS = 4;
+    public static final int BAD_APP_ID = 2;
 
     /** Invalid token. Expired token needs to be re-generated. */
-    public static final int INVALID_TOKEN = 5;
+    public static final int INVALID_TOKEN = 3;
+
+    /** Invalid match for supplied app_id and sharedSecretKey. You are not authorized to use Nexmo services. **/
+    public static final int INVALID_CREDENTIALS = 4;
+
+    /** Generic internal error, the service might be down for the moment. Please try again later. */
+    public static final int INTERNAL_ERROR = 5;
 
     /** Your account does not have sufficient credit to process this request. */
     public static final int QUOTA_EXCEEDED = 9;

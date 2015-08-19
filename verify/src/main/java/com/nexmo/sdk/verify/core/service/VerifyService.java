@@ -208,13 +208,16 @@ public class VerifyService extends BaseService<VerifyResponse>
          */
         private Response startVerifyRequest(final VerifyRequest verifyRequest) throws IOException {
             Context appContext = nexmoClient.getContext();
+            String push_token = nexmoClient.getGcmRegistrationToken();
             Map<String, String> requestParams = new TreeMap<>();
             requestParams.put(TokenService.PARAM_TOKEN, verifyRequest.getToken());
-            requestParams.put(VerifyService.PARAM_NUMBER, verifyRequest.getPhoneNumber());
-            requestParams.put(VerifyService.PARAM_COUNTRY_CODE, verifyRequest.getCountryCode());
+            requestParams.put(BaseService.PARAM_NUMBER, verifyRequest.getPhoneNumber());
+            requestParams.put(BaseService.PARAM_COUNTRY_CODE, verifyRequest.getCountryCode());
             requestParams.put(BaseService.PARAM_APP_ID, nexmoClient.getApplicationId());
             requestParams.put(BaseService.PARAM_DEVICE_ID, DeviceProperties.getIMEI(appContext));
             requestParams.put(BaseService.PARAM_SOURCE_IP, DeviceProperties.getIPAddress(appContext));
+            if (!TextUtils.isEmpty(push_token))
+                requestParams.put(BaseService.PARAM_GCM_REGISTRATION_TOKEN, push_token);
             String deviceLanguage = DeviceProperties.getLanguage();
             if(!TextUtils.isEmpty(deviceLanguage))
                 requestParams.put(BaseService.PARAM_LANGUAGE, deviceLanguage);

@@ -69,7 +69,7 @@ public class DeviceUtil {
     }
 
     /**
-     * Returns the phone number for the SIM line 1. Only for GSM phones.
+     * Returns the phone number for the SIM line 1.
      * @param context The context of the sender activity.
      *
      * @return The phone number, or  {@code null} if it is unavailable.
@@ -84,7 +84,7 @@ public class DeviceUtil {
     }
 
     /**
-     * Checks if the current GSM handset uses a SIM card.
+     * Checks if the current handset uses a SIM card.
      * @param context The context of the sender activity.
      *
      * @return True if the handset uses a SIM card,
