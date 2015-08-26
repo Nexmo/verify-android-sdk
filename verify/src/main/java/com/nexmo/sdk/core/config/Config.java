@@ -27,7 +27,7 @@ public class Config {
     public static final String ENDPOINT_SANDBOX = "";
 
     /** Current Nexmo SDK version. */
-    public static final String SDK_REVISION_CODE = "0.2";
+    public static final String SDK_REVISION_CODE = "0.3";
 
     /** Custom HTTP header. */
     public static final String OS_ANDROID = "ANDROID";

@@ -16,12 +16,17 @@ package com.nexmo.sdk.verify.client;
 import java.io.IOException;
 import java.util.HashSet;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.nexmo.sdk.BuildConfig;
 import com.nexmo.sdk.NexmoClient;
+import com.nexmo.sdk.core.gcm.VerifyGcmListenerService;
 import com.nexmo.sdk.util.DeviceUtil;
 
 import com.nexmo.sdk.core.client.ResultCodes;
@@ -142,6 +147,7 @@ public class VerifyClient implements BaseClientListener {
     private VerifyServiceListener verifyServiceListener;
     private CheckServiceListener checkServiceListener;
     private SearchServiceListener searchServiceListener;
+    private BroadcastReceiver gcmPayloadBroadcastReceiver;
 
     /**
      * Acquire a new {@link VerifyClient} instance.
@@ -151,6 +157,7 @@ public class VerifyClient implements BaseClientListener {
     public VerifyClient(final NexmoClient nexmoClient) {
         this.verifyClientListeners = new HashSet<>();
         this.nexmoClient = nexmoClient;
+        setGcmBroadcastReceiver();
     }
 
     /**
@@ -205,7 +212,7 @@ public class VerifyClient implements BaseClientListener {
             warnIfMissingListener();
             if (BuildConfig.DEBUG)
                 Log.d(TAG, "SIM card cannot be read. Please use the VerifyClient.getVerifiedUser method and supply params " +
-                            "for phone number and country code for the verification to be initiated.");
+                        "for phone number and country code for the verification to be initiated.");
             notifyErrorListeners(VerifyError.NUMBER_REQUIRED);
         }
     }
@@ -230,8 +237,7 @@ public class VerifyClient implements BaseClientListener {
             setupVerifyClientListeners();
             VerifyService service = VerifyService.getInstance();
             service.init(this.verifyRequest);
-            service.start(this.nexmoClient,
-                          this.verifyServiceListener);
+            service.start(this.nexmoClient, this.verifyServiceListener);
         }
     }
 
@@ -248,21 +254,8 @@ public class VerifyClient implements BaseClientListener {
     public void checkPinCode(final String pinCode) {
         warnIfMissingListener();
 
-        if (TextUtils.isEmpty(pinCode) || pinCode.length() < Defaults.MIN_CODE_LENGTH) {
-            // Any empty pin will not be stored, neither sent to the service.
-            if(BuildConfig.DEBUG)
-                Log.d(TAG, "Supplied phone number has an invalid length. Verify cannot be initiated.");
-            notifyErrorListeners(VerifyError.INVALID_PIN_CODE);
-        }
-        else {
-            updateVerifyRequestPin(pinCode);
-            CheckService service = CheckService.getInstance();
-            service.init(this.verifyRequest);
-            service.start(this.nexmoClient,
-                          this.checkServiceListener);
-        }
+        manageCheckPin(pinCode);
     }
-
 
     /**
      * Get/Search the current state of the user, with the provided country code and phone number.
@@ -279,18 +272,17 @@ public class VerifyClient implements BaseClientListener {
     public void getUserStatus(final String countryCode,
                               final String phoneNumber,
                               final SearchListener searchListener) {
-        Context appContext = this.nexmoClient.getContext();
         if (searchListener == null) {
             if (BuildConfig.DEBUG)
                 Log.d(TAG, "Warning: There is no SearchListener in place. " +
-                           "Please set it to the getVerifiedUser to be able to receive search events.");
+                        "Please set it to the getVerifiedUser to be able to receive search events.");
         }
         else {
             setupSearchListener(searchListener);
             SearchService service = SearchService.getInstance();
             service.init(new SearchRequest(countryCode, phoneNumber));
             service.start(this.nexmoClient,
-                          this.searchServiceListener);
+                    this.searchServiceListener);
         }
     }
 
@@ -329,24 +321,23 @@ public class VerifyClient implements BaseClientListener {
                         final String phoneNumber,
                         final Command command,
                         final CommandListener commandListener) {
-        Context appContext = this.nexmoClient.getContext();
         if (commandListener == null) {
             if (BuildConfig.DEBUG)
                 Log.d(TAG, "Warning: There is no CommandListener in place. " +
-                           "Please set it to the command method to be able to receive events.");
+                        "Please set it to the command method to be able to receive events.");
         } else if (command == null) {
             if (BuildConfig.DEBUG)
                 Log.d(TAG, "Warning: There is no command action in place. " +
-                           "Please set it to the command method.");
+                        "Please set it to the command method.");
         }
         else {
             CommandServiceListener commandServiceListener = new CommandServiceListener(command,
-                                                                                       commandListener,
-                                                                                       this);
+                    commandListener,
+                    this);
             CommandService service = CommandService.getInstance();
             service.init(new CommandRequest(countryCode, phoneNumber, command));
             service.start(this.nexmoClient,
-                          commandServiceListener);
+                    commandServiceListener);
         }
     }
 
@@ -362,7 +353,8 @@ public class VerifyClient implements BaseClientListener {
                 notifyErrorListeners(VerifyError.INVALID_NUMBER);
                 break;
             }
-            case ResultCodes.INVALID_CREDENTIALS: {
+            case ResultCodes.INVALID_CREDENTIALS:
+            case ResultCodes.BAD_APP_ID:{
                 notifyErrorListeners(VerifyError.INVALID_CREDENTIALS);
                 break;
             }
@@ -451,6 +443,48 @@ public class VerifyClient implements BaseClientListener {
     }
 
     /**
+     * Handle the GCM notifications broadcast receiver, enable it to automatically trigger the check request
+     * for the ongoing verify.
+     */
+    private void setGcmBroadcastReceiver() {
+        gcmPayloadBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.hasExtra(VerifyGcmListenerService.MESSAGE_KEY_PIN)) {
+                    String pinCode = intent.getExtras().getString(VerifyGcmListenerService.MESSAGE_KEY_PIN);
+                    Log.d(TAG, "gcmPayloadBroadcastReceiver Pin: " + pinCode);
+                    manageCheckPin(pinCode);
+                }
+            }
+        };
+
+        LocalBroadcastManager.getInstance(this.nexmoClient.getContext()).
+                registerReceiver(gcmPayloadBroadcastReceiver, new IntentFilter(VerifyGcmListenerService.ACTION_BROADCAST_PIN));
+    }
+
+    private void manageCheckPin(final String pinCode) {
+        if (TextUtils.isEmpty(pinCode) || pinCode.length() < Defaults.MIN_CODE_LENGTH) {
+            // Any empty pin will not be stored, neither sent to the service.
+            if(BuildConfig.DEBUG)
+                Log.d(TAG, "Supplied phone number has an invalid length. Verify cannot be initiated.");
+            notifyErrorListeners(VerifyError.INVALID_PIN_CODE);
+        }
+        else if (!this.verifyRequest.isPinCheckAvailable()) {
+            // Any empty pin will not be stored, neither sent to the service.
+            if(BuildConfig.DEBUG)
+                Log.d(TAG, "PIN code cannot be checked because there is no verification in progress.Check cannot be initiated.");
+            notifyErrorListeners(VerifyError.VERIFICATION_NOT_STARTED);
+        }
+        else {
+            updateVerifyRequestPin(pinCode);
+            CheckService service = CheckService.getInstance();
+            service.init(this.verifyRequest);
+            service.start(this.nexmoClient,
+                    this.checkServiceListener);
+        }
+    }
+
+    /**
      * Setup the search related listeners. Used only when the search functionality is requested.
      * @param searchListener The provided search listener.
      */
@@ -479,19 +513,19 @@ public class VerifyClient implements BaseClientListener {
     private void warnIfMissingListener() {
         if (this.verifyClientListeners.isEmpty() && BuildConfig.DEBUG)
             Log.d(TAG, "Warning: There is no VerifyClientListener in place. " +
-                       "Please set it on this VerifyClient instance to be able to receive verify events.");
+                    "Please set it on this VerifyClient instance to be able to receive verify events.");
     }
 
     private boolean isVerifyMissingInput(final String countryCode,
                                          final String phoneNumber) {
         if (TextUtils.isEmpty(countryCode) && BuildConfig.DEBUG) {
             Log.d(TAG, "Warning: The 'countryCode' parameter is missing. " +
-                       "Please set it to the getVerifiedUser method.");
+                    "Please set it to the getVerifiedUser method.");
             return true;
         }
         else if (TextUtils.isEmpty(phoneNumber) && BuildConfig.DEBUG) {
             Log.d(TAG, "Warning: The 'phoneNumber' parameter is missing. " +
-                       "Please set it to the getVerifiedUser method.");
+                    "Please set it to the getVerifiedUser method.");
             return true;
         }
         return false;

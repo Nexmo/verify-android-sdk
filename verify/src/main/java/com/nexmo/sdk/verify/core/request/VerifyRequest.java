@@ -56,16 +56,7 @@ public class VerifyRequest extends BaseRequest implements Parcelable {
      * Checks if the required information for a pin check is available.
      */
     public boolean isPinCheckAvailable() {
-        if (TextUtils.isEmpty(super.getCountryCode()))
-            return false;
-
-        if (TextUtils.isEmpty(super.getPhoneNumber()))
-            return false;
-
-        if (TextUtils.isEmpty(super.getToken()))
-            return false;
-
-        return this.userStatus == UserStatus.USER_PENDING;
+        return (!TextUtils.isEmpty(super.getCountryCode()) && !TextUtils.isEmpty(super.getPhoneNumber()));
     }
 
     public UserStatus getUserStatus() {

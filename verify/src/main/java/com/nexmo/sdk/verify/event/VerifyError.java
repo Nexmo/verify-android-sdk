@@ -21,9 +21,16 @@ public enum VerifyError {
 
     /** There is already a pending verification in progress. Handle {@link VerifyClientListener} events to check the progress. */
     VERIFICATION_ALREADY_STARTED,
+    /**
+     * PIN code cannot be checked because there is no verification in progress.
+     * Please use the {@link com.nexmo.sdk.verify.client.VerifyClient#getVerifiedUser(String, String)}
+     * method for the verification to be initiated and wait for a PIN code.
+     */
+    VERIFICATION_NOT_STARTED,
     /** Missing or invalid phone number. */
     INVALID_NUMBER,
     /**
+     * @deprecated
      * Provided number does not match the SIM phone number.
      * Please use the {@link com.nexmo.sdk.verify.client.VerifyClient#getVerifiedUser(String, String)}
      * method without params for the verification to be initiated.

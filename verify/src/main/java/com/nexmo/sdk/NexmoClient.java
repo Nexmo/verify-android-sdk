@@ -33,6 +33,11 @@ import com.nexmo.sdk.verify.core.service.BaseService;
  *     This key is unique for each application registered to use the Number SDK service.</li>
  *     <li>applicationId:      The auto-generated id for the application.</li>
  * </ul>
+ * <p>Optional parameter, if you wish to integrate push notifications to your app and receive the PIN code via push.
+ * <ul>
+ *     <li>gcmSenderId:       Your Google API project number used for GoogleCloudMessaging. Aquire this project number from Google Developer
+ *                            Console, as described in <a href="https://developers.google.com/cloud-messaging/"></a>Getting Started.</li>
+ * </ul>
  * If the required parameters for creating a {@link com.nexmo.sdk.NexmoClient} instance are not supplied, then {@link NexmoClientBuilder#build} fails by throwing a {@link ClientBuilderException} exception.
  * <p> Example usage:
  * <pre>
@@ -62,12 +67,24 @@ public class NexmoClient {
     private final String appId;
     private final String sharedSecretKey;
     private final ENVIRONMENT_HOST environmentHost;
+    private String GcmRegistrationToken;
 
-    private NexmoClient(final Context context, final String appId, final String secretKey, final ENVIRONMENT_HOST environmentHost) {
+    private NexmoClient(final Context context, final String appId, final String secretKey, final ENVIRONMENT_HOST environmentHost, final String GcmRegistrationToken) {
         this.context = context;
         this.appId = appId;
         this.sharedSecretKey = secretKey;
         this.environmentHost = environmentHost;
+        this.GcmRegistrationToken = GcmRegistrationToken;
+    }
+
+    /**
+     * Reset the GCM registration token whenever there is a new one available.
+     * @param gcmRegistrationToken The GCM registration ID that uniquely identifies an app/device pairing for push purposes.
+     */
+    public void setGcmRegistrationToken(final String gcmRegistrationToken) {
+        synchronized(this) {
+            this.GcmRegistrationToken = gcmRegistrationToken;
+        }
     }
 
     /**
@@ -103,6 +120,15 @@ public class NexmoClient {
     }
 
     /**
+     * Returns the provided GCM registration token value for this project.
+     * This value should be set prior to any verification start......
+     * @return  The GCM registration ID that uniquely identifies an app/device pairing for push purposes.
+     */
+    public String getGcmRegistrationToken() {
+        return this.GcmRegistrationToken;
+    }
+
+    /**
      * Returns the current version of the Nexmo SDK library.
      *
      *  @return The current version of the Nexmo SDK library.
@@ -113,7 +139,8 @@ public class NexmoClient {
 
     @Override
     public String toString() {
-        return "ApplicationId: " + (this.appId != null ? this.appId : "") + "," + "SharedKey: " + (this.sharedSecretKey != null ? this.sharedSecretKey : "") + "," + "Environment: " + (this.environmentHost != null ? this.environmentHost : "");
+        return "ApplicationId: " + (this.appId != null ? this.appId : "") + "," + "SharedKey: " + (this.sharedSecretKey != null ? this.sharedSecretKey : "") + "," +
+                "Environment: " + (this.environmentHost != null ? this.environmentHost : "") + "," + "GcmRegistrationToken: " + (this.GcmRegistrationToken != null ? this.GcmRegistrationToken : "");
     }
 
     /**
@@ -133,6 +160,7 @@ public class NexmoClient {
      *                                      .context(myAppContext)
      *                                      .sharedSecretKey("...")
      *                                      .applicationId("...")
+     *                                      .GcmRegistrationId("...") // optional, for push integration only.
      *                                      .build();
      *     } catch (ClientBuilderException e) {
      *         e.printStackTrace();
@@ -145,6 +173,7 @@ public class NexmoClient {
         private String appId;
         private String sharedSecretKey;
         private ENVIRONMENT_HOST environmentHost = ENVIRONMENT_HOST.PRODUCTION;
+        private String GcmRegistrationToken;
 
         /**
          * Acquire a NexmoClient, based on the following mandatory parameters:
@@ -164,15 +193,15 @@ public class NexmoClient {
             if (this.context == null)
                 ClientBuilderException.appendExceptionCause(stringBuilder, "Context");
             if (TextUtils.isEmpty(this.sharedSecretKey))
-                ClientBuilderException.appendExceptionCause(stringBuilder, "SharedSecretKey");
+                ClientBuilderException.appendExceptionCause(stringBuilder, BaseService.RESPONSE_SIG);
             if (TextUtils.isEmpty(this.appId))
                 ClientBuilderException.appendExceptionCause(stringBuilder, BaseService.PARAM_APP_ID);
 
             String missingParameters = stringBuilder.toString();
-            if (TextUtils.isEmpty(missingParameters))
-                return new NexmoClient(this.context, this.appId, this.sharedSecretKey, this.environmentHost);
-            else
+            if (!TextUtils.isEmpty(missingParameters))
                 throw new ClientBuilderException("Building a NexmoClient instance has failed due to missing parameters: " + missingParameters);
+            else
+                return new NexmoClient(this.context, this.appId, this.sharedSecretKey, this.environmentHost, this.GcmRegistrationToken);
         }
 
         public NexmoClientBuilder context(final Context context) {
@@ -195,6 +224,10 @@ public class NexmoClient {
             return this;
         }
 
+        public NexmoClientBuilder gcmRegistrationToken(final String GcmRegistrationToken) {
+            this.GcmRegistrationToken = GcmRegistrationToken;
+            return this;
+        }
     }
 
 }
