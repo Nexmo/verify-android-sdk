@@ -57,18 +57,20 @@ compile 'com.nexmo.sdk:verify-beta<version number>@aar'
 ```
 
 <a name="configureman"></a>
-##Configure the manifest
+##Setup your application configuration
 
-Import the VerifySample application into Android Studio.
-Set your applicationId and sharedSecretKey as meta-data in AndroidManifest.xml file.
-```xml
-        <meta-data android:name="applicationId" android:value="yourApplicationId" />
-        <meta-data android:name="sharedSecretKey" android:value="yourSharedSecretKey" />
+Import the VerifySample or VerifySample_PushEnabled application into Android Studio.
+Set your NexmoAppId and NexmoSharedSecretKey, as requested in the Config.java
+```java
+    public static final String NexmoAppId = "yourAppId";
+    public static final String NexmoSharedSecretKey = "YourSharedSecretKey";
 ```
+Note that this is just a proposed solution, you may choose to persist this information on your own applications
+as you wish.
 Run the sample on your handset, using your own phone number.
 
 <a name="implement"></a>
-##Implement the Verify SDK
+##Integrate the Verify SDK
 
 Creating a new Nexmo Client:
 ```java
