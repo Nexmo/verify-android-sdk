@@ -87,10 +87,9 @@ public class VerifyService extends BaseService<VerifyResponse>
         }
         setNexmoClient(nexmoClient);
         setServiceListener(listener);
-        if (this.verifyRequest.hasToken())
-            new VerifyTask(nexmoClient, getServiceListener()).execute(this.verifyRequest);
-        else
-            TokenService.getInstance().start(nexmoClient, this);
+
+        // Do not reuse tokens anymore, always generate a new one to ensure it's valid.
+        TokenService.getInstance().start(nexmoClient, this);
         return true;
     }
 

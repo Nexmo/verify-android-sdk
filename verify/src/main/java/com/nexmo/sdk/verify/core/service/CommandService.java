@@ -95,10 +95,8 @@ public class CommandService extends BaseService<VerifyResponse>
         setNexmoClient(nexmoClient);
         setServiceListener(listener);
 
-        if (this.commandRequest.hasToken())
-            new CommandTask(nexmoClient, getServiceListener()).execute(this.commandRequest);
-        else
-            TokenService.getInstance().start(nexmoClient, this);
+        // Do not reuse tokens anymore, always generate a new one to ensure it's valid.
+        TokenService.getInstance().start(nexmoClient, this);
         return true;
     }
 

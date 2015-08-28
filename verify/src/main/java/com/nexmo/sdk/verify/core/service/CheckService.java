@@ -77,10 +77,8 @@ public class CheckService extends BaseService<CheckResponse>
         setNexmoClient(nexmoClient);
         setServiceListener(listener);
 
-        if (this.verifyRequest.hasToken())
-            new CheckTask(nexmoClient, listener).execute(this.verifyRequest);
-        else
-           TokenService.getInstance().start(nexmoClient, this);
+        // Do not reuse tokens anymore, always generate a new one to ensure it's valid.
+        TokenService.getInstance().start(nexmoClient, this);
         return true;
     }
 

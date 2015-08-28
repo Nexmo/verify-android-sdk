@@ -15,8 +15,7 @@ package com.nexmo.sdk.sample.verifysample;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.nexmo.sdk.NexmoClient;
@@ -38,6 +37,7 @@ public class SampleApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
         acquireVerifyClient();
     }
 
@@ -49,14 +49,9 @@ public class SampleApplication extends Application {
      * you may choose to use SharedPreferences, a file or define meta-data in the AndroidManifest.xml
      */
     public void acquireVerifyClient() {
-        String appId = null;
-        String sharedSecretKey = null;
-        try {
-            ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
-            appId = applicationInfo.metaData.getString("com.nexmo.sdk.applicationId");
-            sharedSecretKey = applicationInfo.metaData.get("com.nexmo.sdk.sharedSecretKey").toString();
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG, "Failed to load meta-data, NameNotFound: " + e.getMessage());
+        if (TextUtils.isEmpty(Config.NexmoAppId) || TextUtils.isEmpty(Config.NexmoSharedSecretKey)) {
+            Log.e(TAG, "You must supply valid appId and sharedSecretKey, provided by Nexmo");
+            return;
         }
 
         // Acquire the NexmoClient with all the necessary parameters.
@@ -65,12 +60,13 @@ public class SampleApplication extends Application {
         try {
             nexmoClient = new NexmoClient.NexmoClientBuilder()
                     .context(context)
-                    .applicationId(appId)
-                    .sharedSecretKey(sharedSecretKey)
+                    .applicationId(Config.NexmoAppId)
+                    .sharedSecretKey(Config.NexmoSharedSecretKey)
                     .environmentHost(NexmoClient.ENVIRONMENT_HOST.PRODUCTION)
                     .build();
         } catch (ClientBuilderException e) {
             e.printStackTrace();
+            return;
         }
         this.verifyClient = new VerifyClient(nexmoClient);
     }
