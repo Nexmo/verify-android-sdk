@@ -81,12 +81,11 @@ public class MainFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onResume(){
+        super.onResume();
+
         final Activity activity = getActivity();
         final SampleApplication application = (SampleApplication) activity.getApplication();
-        final InputMethodManager inputMethodManager = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-
         application.getVerifyClient().addVerifyListener(new VerifyClientListener() {
             @Override
             public void onVerifyInProgress(final VerifyClient verifyClient) {
@@ -117,6 +116,22 @@ public class MainFragment extends Fragment {
                 showToast("No internet connectivity.");
             }
         });
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+
+        final Activity activity = getActivity();
+        final SampleApplication application = (SampleApplication) activity.getApplication();
+        application.getVerifyClient().removeVerifyListeners();
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        final Activity activity = getActivity();
+        final InputMethodManager inputMethodManager = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 
         // Set default prefix and phone number if possible.
         final Spinner countrySpinner = (Spinner) activity.findViewById(R.id.prefix_sp);

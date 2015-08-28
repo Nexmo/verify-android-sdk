@@ -76,10 +76,8 @@ public class SearchService extends BaseService<SearchResponse>
         setNexmoClient(nexmoClient);
         setServiceListener(listener);
 
-        if (this.searchRequest.hasToken())
-            new SearchTask(nexmoClient, listener).execute(this.searchRequest);
-        else
-            TokenService.getInstance().start(nexmoClient, this);
+        // Do not reuse tokens anymore, always generate a new one to ensure it's valid.
+        TokenService.getInstance().start(nexmoClient, this);
         return true;
     }
 

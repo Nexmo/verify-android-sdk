@@ -22,8 +22,6 @@
             android:label="@string/check_code_fragment_name"
             android:parentActivityName=".MainActivity" >
         </activity>
-        <meta-data android:name="com.nexmo.sdk.applicationId" android:value="yourApplicationID" />
-        <meta-data android:name="com.nexmo.sdk.sharedSecretKey" android:value="yourSharedSecretKey" />
     </application>
 
 </manifest>
