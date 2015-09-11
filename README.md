@@ -6,7 +6,7 @@ You use Nexmo Verify to check that a person has access to a specific phone numbe
 To complete phone verification:
 
 1. Verify sends a PIN in an SMS and/or Text-to-speech (TTS) call to your user.
-  You can also enable Google Cloud Messaging (GCM) in order to send a PIN using push notifications.
+   You can also enable Google Cloud Messaging (GCM) in order to send a PIN using push notifications.
 2. The user enters this PIN into your App or website.
 3. You use Verify to check that the PIN entered by your user is the one you sent.
 
