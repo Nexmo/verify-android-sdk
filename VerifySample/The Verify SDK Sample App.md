@@ -1,7 +1,7 @@
-
 #The Nexmo Verify SDK Sample App
 
 The Nexmo Verify SDK Sample App shows you how to implement the Verify SDK into a mobile App. To use this sample:
+
 1. <a href="#prereq">Prerequisites</a>
 2. <a href="#import">Importing the Sample App</a>
 3. <a href="#run">Running the Sample App</a>
@@ -18,10 +18,10 @@ To develop with the Nexmo Verify SDK you need to:
 You use these identifiers so your App can interact with Nexmo services.
  **Note**:these identifiers are completely separate from your Nexmo __Key__ and __Secret__. You MUST NOT embed your Nexmo Key and Secret in your App.
 5. Install <a href="http://developer.android.com/tools/studio/index.html"> Android Studio</a>.
-6. Clone the Nexmo Verify SDK locally from: https://github.com/Nexmo/verify-android-sdk.
+6. Clone the Nexmo Verify SDK locally from: https://github.com/Nexmo/verify-android-sdk .
 
 
-#Importing the Sample App<a name="import"></a>
+##Importing the Sample App<a name="import"></a>
 
 To use the Nexmo Verify SDK sample app, you need to:
 
@@ -31,6 +31,7 @@ To use the Nexmo Verify SDK sample app, you need to:
 4. If your project shows an error, install the tools suggested in Messages by Android Studio.
   Android Studio builds the project.
 5. Set your __ID__ and __Shared Secret__ in *app/java/com.nexmo.sdk.sample.verifysample/Config*:
+
   ```java
     public static final String NexmoAppId = "yourAppId";
     public static final String NexmoSharedSecretKey = "YourSharedSecretKey";
@@ -38,9 +39,10 @@ To use the Nexmo Verify SDK sample app, you need to:
 
 **Note**: this is a sample, you should persist this information on your App.
 
-#Running the Sample App<a name="run"></a>
+##Running the Sample App<a name="run"></a>
 
 To run this sample App:
+
 1.Setup your mobile device to work with Android Studio: https://developer.android.com/tools/building/building-studio.html#RunningOnDeviceStudio.
 2.Click *Run* > *Run*, then select your mobile device.
 3.Follow the instructions in the App.

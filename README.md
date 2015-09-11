@@ -17,7 +17,7 @@ In order to implement the Nexmo Verify SDK in your App, see:
 * [The Verify SDK Sample App](https://github.com/Nexmo/verify-android-sdk/blob/master/VerifySample/The Verify SDK Sample App.md)
 * [The Verify SDK PUSH Enabled Sample App](https://github.com/Nexmo/verify-android-sdk/blob/master/VerifySample_PushEnabled/The Verify SDK PUSH Enabled Sample App.md)
 * [Integrating the Nexmo Verify SDK](https://github.com/Nexmo/verify-android-sdk/blob/master/Integrating the Nexmo Verify SDK.md)
-* [Advanced use of the Nexmo Verify SDK](https://github.com/Nexmo/verify-android-sdk/blob/master/Advanced use of the Nexmo Verify SDK)
+* [Advanced use of the Nexmo Verify SDK](https://github.com/Nexmo/verify-android-sdk/blob/master/Advanced Use of the Nexmo Verify SDK.md)
 
 License
 =======

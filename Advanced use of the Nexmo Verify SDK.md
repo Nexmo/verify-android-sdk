@@ -2,6 +2,7 @@
 # Advanced use of the Nexmo Verify SDK
 
 The following sections explain how to use the advanced features in the Nexmo Verify SDK:
+
 * <a href="#search">Search User Status</a>
 * <a href="#cancel">Cancel verification</a>
 * <a href="#trigger">Trigger the next verification event</a>
@@ -12,6 +13,7 @@ The following sections explain how to use the advanced features in the Nexmo Ver
 You use *getUserStatus* to retrieve a user's current verification status. *getUserStatus* takes into account the device it is being executed on. Only query the status of the user using the current (device ID, phone number) pair.
 
 To search for status:
+
 1. Add the following to your code:
   ```java
         verifyClient.getUserStatus("CountryPrefix", "PhoneNumber", new SearchListener() {
@@ -34,13 +36,14 @@ To search for status:
             public void onException(IOException e) {
             }
         });
-```
+  ```
 
 ## Cancel verification<a name="cancel"></a>
 
 You can cancel an ongoing verification. For example, if a user no longer wishes to perform the verification. A cancelled verification will not send any further verification SMS or TTS requests to the device.
 
 To cancel a verification request:
+
 1. Call the `command` function  with `Command.TRIGGER_NEXT_EVENT` action:
   ```java
         verifyClient.command("CountryPrefix", "PhoneNumber", Command.LOGOUT, new CommandListener() {
@@ -62,9 +65,10 @@ To cancel a verification request:
 
 ## Trigger the next verification event<a name="trigger"></a>
 
-Speed up the verification workflow by triggering the next workflow event early. For instance in an *SMS -> TTS -> TTS* workflow, at the SMS stage, call the *command* function with *Command.TRIGGER_NEXT_EVENT* action to trigger the *TTS* event:
+Speed up the verification workflow by triggering the next workflow event early. For instance in an *SMS -> TTS -> TTS* workflow, at the SMS stage, call the *command* function with *Command.TRIGGER_NEXT_EVENT* action to trigger the *TTS* event.
 
 To trigger the next event:
+
 1. Add the following to your code:
   ```java
         verifyClient.command("CountryPrefix", "PhoneNumber", Command.TRIGGER_NEXT_EVENT, new CommandListener() {
@@ -82,13 +86,15 @@ To trigger the next event:
             public void onException(IOException e) {
             }
         });
-```
+  ```
 
 ### Logout<a name="logout"></a>
 
 You can logout a user in order to reset their verification status. Subsequent verification requests will no longer return a *verified* response directly, they will execute the entire verification workflow again.
 
-1. To logout a user, call the `command` function with `Command.LOGOUT` action:
+To logout a user
+ 
+1. Call the `command` function with `Command.LOGOUT` action:
   ```java
         verifyClient.command("CountryPrefix", "PhoneNumber", Command.LOGOUT, new CommandListener() {
             @Override
@@ -105,4 +111,4 @@ You can logout a user in order to reset their verification status. Subsequent ve
             public void onException(IOException e) {
             }
         });
-```
+  ```
