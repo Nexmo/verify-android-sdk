@@ -6,7 +6,7 @@ VerifyBeta
 Initial release
 
 
-VerifyBeta0.2
+VerifyBeta 0.2
 ========
 6 July 2015
 
@@ -71,4 +71,12 @@ Verify Beta 0.3
 
 - updated error codes.
 
+Verify Beta 0.4
+========
+11 September 2015
 
+- updated JSon service response formatting to allow indentation.
+
+- updated the gcm dependency from 'com.google.android.gms:play-services-gcm:7.5.+' to: 'com.google.android.gms:play-services-gcm:7.8.0'
+
+- split up the documentation on layers.

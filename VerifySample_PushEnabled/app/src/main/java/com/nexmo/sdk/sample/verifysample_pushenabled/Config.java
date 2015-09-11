@@ -22,5 +22,5 @@ public class Config {
 
     public static final String NexmoAppId = "YourAppId";
     public static final String NexmoSharedSecretKey = "YourSharedSecretKey";
-    public static final String PushSenderID = "";
+    public static final String PushSenderID = "YourPushSenderId";
 }
