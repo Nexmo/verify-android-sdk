@@ -29,8 +29,7 @@ To use the Nexmo Verify SDK sample App, you need to:
 1. Open Android Studio.
 2. In the Welcome page, click *Import project*.
 3. In *Select Gradle Project to Import*, navigate to *&lt;git_home>/verify-android-sdk/VerifySample* and click *OK*.
-4. If your project shows an error, install the tools suggested in *Messages* by Android Studio.
-    Android Studio builds the project.
+4. If your project shows an error, install the tools suggested in *Messages* by Android Studio. Android Studio builds the project.
 5. Set your __ID__ and __Shared Secret__ in *app/java/com.nexmo.sdk.sample.verifysample/Config*:
 
   ```
@@ -45,6 +44,6 @@ To use the Nexmo Verify SDK sample App, you need to:
 
 To run this sample App:
 
-1.Setup your mobile device to work with Android Studio: https://developer.android.com/tools/building/building-studio.html#RunningOnDeviceStudio.
-2.Click *Run* > *Run*, then select your mobile device.
-3.Follow the instructions in the App.
+1. Setup your mobile device to work with Android Studio: https://developer.android.com/tools/building/building-studio.html#RunningOnDeviceStudio. 
+2. Click *Run* > *Run*, then select your mobile device. 
+3. Follow the instructions in the App. 

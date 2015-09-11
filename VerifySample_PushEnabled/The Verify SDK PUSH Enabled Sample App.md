@@ -39,7 +39,7 @@ To use the Nexmo Verify SDK sample app, you need to:
     public static final String PushSenderID = "YourSenderID";
 ```
 
-**Note**: Normally *PushSenderId* is your project ID supplied by Google. It is used as the GCM sender ID, all GCM registration token logic is handled in this sample. However, for this sample you can use the following *PushSenderId* : *919459387407*. To do this, contact Nexmo Customer Suppor tand ask them to set the Push server API key value to 'AIzaSyAX5gR5ccrhN8WmDybuwV1LEJdELFAYVIM' when you create your configuration in the Nexmo Dashboard.
+**Note**: Normally *PushSenderId* is your project ID supplied by Google. It is used as the GCM sender ID, all GCM registration token logic is handled in this sample. However, for this sample you can use the following *PushSenderId* : *919459387407*. To do this, contact Nexmo Customer Support and ask them to set the Push server API key value to 'AIzaSyAX5gR5ccrhN8WmDybuwV1LEJdELFAYVIM' when you create your configuration in the Nexmo Dashboard.
 
 **Note**: this is a sample, you should persist this information on your App.
 
@@ -47,6 +47,6 @@ To use the Nexmo Verify SDK sample app, you need to:
 
 To run this sample App:
 
-1.Setup your mobile terminal to work with Android Studio: https://developer.android.com/tools/building/building-studio.html#RunningOnDeviceStudio.
-2.Click *Run* > *Run*, then select your mobile device.
-3.Follow the instructions in the App.
+1. Setup your mobile terminal to work with Android Studio: https://developer.android.com/tools/building/building-studio.html#RunningOnDeviceStudio.
+2. Click *Run* > *Run*, then select your mobile device.
+3. Follow the instructions in the App.
