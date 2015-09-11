@@ -139,9 +139,10 @@ public class Client implements ConnectionClient {
         StringBuilder builder = new StringBuilder();
         Reader reader = new InputStreamReader(inputStream);
         BufferedReader buffReader = new BufferedReader(reader);
-        String line;
-        while ((line = buffReader.readLine()) != null)
-            builder.append(line);
+        int intChar;
+
+        while ((intChar = buffReader.read()) != -1)
+            builder.append((char) intChar);
 
         return builder.toString();
     }
