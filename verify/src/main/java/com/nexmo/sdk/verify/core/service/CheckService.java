@@ -198,9 +198,11 @@ public class CheckService extends BaseService<CheckResponse>
                     this.listener.onResponse(checkResponse);
             }
             else if(this.internalException != null)
-                this.listener.onFail(VerifyError.INTERNAL_ERR, "IO Internal error.");
+                this.listener.onFail(VerifyError.INTERNAL_ERR, this.internalException.getMessage());
             else if (this.networkException != null)
                 this.listener.onException(this.networkException);
+            else
+                this.listener.onFail(VerifyError.INTERNAL_ERR, TAG + "No response found.");
         }
 
         /**
@@ -226,7 +228,7 @@ public class CheckService extends BaseService<CheckResponse>
             requestParams.put(VerifyService.PARAM_COUNTRY_CODE, verifyRequest.getCountryCode());
             requestParams.put(BaseService.PARAM_NUMBER, verifyRequest.getPhoneNumber());
             requestParams.put(BaseService.PARAM_APP_ID, nexmoClient.getApplicationId());
-            requestParams.put(BaseService.PARAM_DEVICE_ID, DeviceProperties.getIMEI(appContext));
+            requestParams.put(BaseService.PARAM_DEVICE_ID, DeviceProperties.getDeviceId(appContext));
             requestParams.put(BaseService.PARAM_SOURCE_IP, DeviceProperties.getIPAddress(appContext));
 
             Client client = new Client();

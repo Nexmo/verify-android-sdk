@@ -18,7 +18,7 @@ import java.io.IOException;
 /**
 * Generic network exception.
 * Caused due to either UnknownHostException or SocketTimeoutException while
-* processing requests.
+ * processing requests.
 */
 public class InternalNetworkException extends IOException {
 
@@ -33,7 +33,7 @@ public class InternalNetworkException extends IOException {
      *
      * @param message The detail message for this exception. Accepts null.
      */
-    public InternalNetworkException(String message) {
+    public InternalNetworkException(final String message) {
         super(message);
     }
 
@@ -43,7 +43,7 @@ public class InternalNetworkException extends IOException {
      * @param message   The detail message for this exception. Accepts null.
      * @param throwable The cause of this exception.
      */
-    public InternalNetworkException(String message, Throwable throwable) {
+    public InternalNetworkException(final String message, final Throwable throwable) {
         super(message, throwable);
     }
 
@@ -52,7 +52,7 @@ public class InternalNetworkException extends IOException {
      *
      * @param throwable The cause of this exception.
      */
-    public InternalNetworkException(Throwable throwable) {
+    public InternalNetworkException(final Throwable throwable) {
         super(throwable);
     }
 

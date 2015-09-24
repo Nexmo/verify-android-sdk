@@ -41,6 +41,11 @@ public enum VerifyError {
      * method and supply params for phone number and country code for the verification to be initiated.
      */
     NUMBER_REQUIRED,
+    /**
+     * There is no Device ID available for this device. You will not be able to use the Nexmo Verify API to to verify against this device.
+     * Please use another device.
+     */
+    DEVICE_ID_NOT_FOUND,
     /** User must be in pending status to be able to perform a PIN check. */
     CANNOT_PERFORM_CHECK,
     /** Missing or invalid PIN code supplied. */

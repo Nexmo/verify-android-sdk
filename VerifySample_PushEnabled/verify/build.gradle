@@ -1,2 +1,2 @@
 configurations.create("default")
-artifacts.add("default", file('verify-beta0.3.aar'))
+artifacts.add("default", file('verify-beta0.5.aar'))

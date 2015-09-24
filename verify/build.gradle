@@ -2,14 +2,15 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion "21.1.2"
+    buildToolsVersion "22.0.1"
 
     defaultConfig {
-        minSdkVersion 8
+        minSdkVersion 9
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -21,6 +22,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile files("libs/junit-4.12.jar")
-    compile files("libs/gson-2.3.jar")
+    compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.google.android.gms:play-services-gcm:7.8.0'
 }
