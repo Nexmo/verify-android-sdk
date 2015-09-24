@@ -58,6 +58,7 @@ VerifyBeta 0.2
 
 - phone number supplied is not checked anymore against the SIM's card phone number, as the method is not reliable, especially on CDMA phones or ported numbers. Therefore, the SDK can now be used even when the user does not supply the same phone number as the one on the device/handset.
 
+
 Verify Beta 0.3
 ========
 19 August 2015
@@ -71,6 +72,7 @@ Verify Beta 0.3
 
 - updated error codes.
 
+
 Verify Beta 0.4
 ========
 11 September 2015
@@ -80,3 +82,12 @@ Verify Beta 0.4
 - updated the gcm dependency from 'com.google.android.gms:play-services-gcm:7.5.+' to: 'com.google.android.gms:play-services-gcm:7.8.0'
 
 - split up the documentation on layers.
+
+
+Verify Beta 0.5
+========
+24 September 2015
+
+- Use maven dependency for gson instead of local lib.
+- Update gradle wrapper and plugin to newest versions.
+- Retrieve a reliable DeviceProperties.getDeviceId even for devices with no Telephony services.

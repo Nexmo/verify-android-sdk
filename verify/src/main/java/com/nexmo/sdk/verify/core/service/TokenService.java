@@ -34,6 +34,7 @@ import com.nexmo.sdk.core.client.Client;
 import com.nexmo.sdk.core.client.Request;
 import com.nexmo.sdk.core.client.Response;
 import com.nexmo.sdk.core.device.DeviceProperties;
+import com.nexmo.sdk.core.device.NoDeviceIdException;
 import com.nexmo.sdk.verify.core.event.token.BaseTokenServiceListener;
 import com.nexmo.sdk.verify.core.response.TokenResponse;
 
@@ -83,6 +84,7 @@ public class TokenService {
         private BaseTokenServiceListener tokenListener;
         private IOException network_exception;
         private InternalNetworkException internal_exception;
+        private NoDeviceIdException deviceId_exception;
         private NexmoClient nexmoClient;
 
         public TokenTask(final NexmoClient nexmoClient,
@@ -106,10 +108,13 @@ public class TokenService {
             try {
                 return getTokenRequest();
             } catch (InternalNetworkException e) {
-                internal_exception = e;
+                this.internal_exception = e;
+            }
+            catch (NoDeviceIdException e) {
+                this.deviceId_exception = e;
             }
             catch (IOException e) {
-                network_exception = e;
+                this.network_exception = e;
             }
             return null;
         }
@@ -137,9 +142,13 @@ public class TokenService {
                     this.tokenListener.onToken(newToken.getToken());
             }
             else if (this.internal_exception != null)
-                this.tokenListener.onTokenError(VerifyError.INTERNAL_ERR, "IO Internal error.");
+                this.tokenListener.onTokenError(VerifyError.INTERNAL_ERR, this.internal_exception.getMessage());
             else if (this.network_exception != null)
                 this.tokenListener.onException(this.network_exception);
+            else if (this.deviceId_exception != null) {
+                this.tokenListener.onTokenError(VerifyError.DEVICE_ID_NOT_FOUND, this.deviceId_exception.getMessage());
+            } else
+                this.tokenListener.onTokenError(VerifyError.INTERNAL_ERR, TAG + "No response found.");
         }
 
         /**
@@ -160,7 +169,12 @@ public class TokenService {
 
             Map<String, String> requestParams = new TreeMap<>();
             requestParams.put(BaseService.PARAM_APP_ID, nexmoClient.getApplicationId());
-            requestParams.put(BaseService.PARAM_DEVICE_ID, DeviceProperties.getIMEI(appContext));
+            try {
+                requestParams.put(BaseService.PARAM_DEVICE_ID, DeviceProperties.getDeviceId(appContext));
+            } catch (NoDeviceIdException e) {
+                Log.d(TAG, e.getMessage());
+                throw new NoDeviceIdException(TAG + " Error parsing response " + e);
+            }
             requestParams.put(BaseService.PARAM_SOURCE_IP, DeviceProperties.getIPAddress(appContext));
 
             Client client = new Client();
