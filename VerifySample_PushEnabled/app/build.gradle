@@ -30,5 +30,6 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.nexmo.sdk:verify-beta0.5@aar'
+    compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.google.android.gms:play-services-gcm:7.8.0'
 }
