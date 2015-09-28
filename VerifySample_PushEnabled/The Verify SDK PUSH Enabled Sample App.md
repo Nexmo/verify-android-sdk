@@ -50,3 +50,5 @@ To run this sample App:
 1. Setup your mobile terminal to work with Android Studio: https://developer.android.com/tools/building/building-studio.html#RunningOnDeviceStudio.
 2. Click *Run* > *Run*, then select your mobile device.
 3. Follow the instructions in the App.
+
+Also, make sure to always update "Android Support Repository", "Android SDK Build Tools" from the SDK Manager.
