@@ -12,12 +12,14 @@ To complete phone verification:
 
 Using the Nexmo Verify SDK you easily integrate Verify functionality into your Android App. With the Nexmo Verify SDK, you enter the user's phone number and the SDK completes verification for you.
 
-In order to implement the Nexmo Verify SDK in your App, see:
+In order to integrate the Nexmo Verify SDK in your App, see:
 
 * [The Verify SDK Sample App](https://github.com/Nexmo/verify-android-sdk/blob/master/VerifySample/The Verify SDK Sample App.md)
 * [The Verify SDK PUSH Enabled Sample App](https://github.com/Nexmo/verify-android-sdk/blob/master/VerifySample_PushEnabled/The Verify SDK PUSH Enabled Sample App.md)
 * [Integrating the Nexmo Verify SDK](https://github.com/Nexmo/verify-android-sdk/blob/master/Integrating the Nexmo Verify SDK.md)
 * [Advanced use of the Nexmo Verify SDK](https://github.com/Nexmo/verify-android-sdk/blob/master/Advanced use of the Nexmo Verify SDK.md)
+
+Feel free to checkout the [Verify SDK codebase] (https://github.com/Nexmo/verify-android-sdk/blob/master/verify) if you wish to contribute to our open source library.
 
 License
 =======
