@@ -1,5 +1,6 @@
 
-#The Nexmo Verify SDK
+The Nexmo Verify SDK
+=======
 
 You use Nexmo Verify to check that a person has access to a specific phone number.
 
@@ -40,7 +41,8 @@ or any modifications or derivative works thereof, except in accordance with the 
  [1]: https://www.nexmo.com/terms-use/verify-sdk/
  [2]: https://www.nexmo.com/privacy-policy/
 
-## Author
+Author
+=======
 
 Emma Tresanszki, emma@nexmo.com
 
