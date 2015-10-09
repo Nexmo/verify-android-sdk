@@ -19,7 +19,7 @@ In order to integrate the Nexmo Verify SDK in your App, see:
 * [Integrating the Nexmo Verify SDK](https://github.com/Nexmo/verify-android-sdk/blob/master/Integrating the Nexmo Verify SDK.md)
 * [Advanced use of the Nexmo Verify SDK](https://github.com/Nexmo/verify-android-sdk/blob/master/Advanced use of the Nexmo Verify SDK.md)
 
-Feel free to checkout the [Verify SDK codebase] (https://github.com/Nexmo/verify-android-sdk/blob/master/verify) if you wish to contribute to our open source library.
+Feel free to checkout the [Verify SDK codebase] (https://github.com/Nexmo/verify-android-sdk/blob/master/verifySDK) if you wish to contribute to our open source library.
 
 License
 =======
