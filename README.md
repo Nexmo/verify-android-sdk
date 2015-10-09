@@ -39,3 +39,8 @@ or any modifications or derivative works thereof, except in accordance with the 
 
  [1]: https://www.nexmo.com/terms-use/verify-sdk/
  [2]: https://www.nexmo.com/privacy-policy/
+
+## Author
+
+Emma Tresanszki, emma@nexmo.com
+
