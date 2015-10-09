@@ -29,22 +29,17 @@ To use the Nexmo Verify SDK, you need to:
 
 1. Integrate the Verify SDK library into Android Studio. To do this:
   1. In Android Studio, either open an existing project, or create a new one.
-  2. In the file explorer, copy *verify-beta&lt;version>.aar* to *AndroidStudioProjects/<project name>/app/libs*.
-  To check that this library is installed in your project, click *File* > *Synchronize*. You will see the library in the Project view.
-2. In Android Studio, update *build.gradle (Module: app)* to include:
+  2.  In Android Studio, update *build.gradle (Module: app)* to include:
   ```java
   repositories {
-  mavenCentral()
-    flatDir {
-        dirs 'libs'
-     }
+      mavenCentral()
   }
 
   dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
-  compile 'com.nexmo.sdk:verify-beta<version number>@aar'
+      compile 'com.nexmo.sdk:verify:<SNAPSHOT version number>'
+  }
 ```
+  3. To get the dependency Synchronize the project, click *File* > *Synchronize*.
 
 ##Integrate the Verify SDK<a name="integrate"></a>
 
