@@ -91,3 +91,11 @@ Verify Beta 0.5
 - Use maven dependency for gson instead of local lib.
 - Update gradle wrapper and plugin to newest versions.
 - Retrieve a reliable DeviceProperties.getDeviceId even for devices with no Telephony services.
+
+
+Verify Beta 0.6
+========
+8 October 2015
+
+- Published verify:1.0.0-SNAPSHOT to maven central.
+- Updated the samples to point to the external dependency, and moved away from using internal aar in flatDir.

@@ -13,10 +13,9 @@ buildscript {
 }
 
 allprojects {
+    version = VERSION_NAME
+    group = GROUP
     repositories {
         mavenCentral()
-        maven {
-            url 'https://oss.sonatype.org/content/groups/public'
-        }
     }
 }
