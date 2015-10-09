@@ -50,5 +50,14 @@ To run this sample App:
 1. Setup your mobile terminal to work with Android Studio: https://developer.android.com/tools/building/building-studio.html#RunningOnDeviceStudio.
 2. Click *Run* > *Run*, then select your mobile device.
 3. Follow the instructions in the App.
+Make sure to always update "Android Support Repository", "Android SDK Build Tools" from the SDK Manager.
 
-Also, make sure to always update "Android Support Repository", "Android SDK Build Tools" from the SDK Manager.
+Usage:
+
+Main screen of the app contains a simple view for initiating a verify request.<br />
+The country code spinner and phone number input field are pre-filled when possible.<br />
+The SIGN IN button triggers a getUserStatus request that checks for the current user status.<br />
+In case the user status is not VERIFIED, an automatic getVerifiedUser is triggered.<br />
+If the verification can be initiated, the CheckCodeFragment is displayed that allows<br />
+input for the PIN code.<br />
+All events are printed in logcat and displayed as Toast messages.
