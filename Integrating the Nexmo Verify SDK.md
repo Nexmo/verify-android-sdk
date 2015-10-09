@@ -66,6 +66,7 @@ You now integrate the Verify SDK into your App code:
   ```
   **Note**: For the security of your Nexmo account, you should not use your Nexmo Key or Secret in your code.
 2. Instantiate a new *VerifyClient* to do the verification magic.
+
   ```java
   verifyClient = new VerifyClient(nexmoClient);
   ```
@@ -90,6 +91,7 @@ You now integrate the Verify SDK into your App code:
     });
   ```
 4. Instantiate a default verification:
+
   ```java
   verifyClient.getVerifiedUser("GB", "07000000000");
   ```
@@ -99,6 +101,7 @@ phone number.
   * If verification is started: *VerifyClientListener.onVerifyInProgress(final VerifyClient verifyClient)* is invoked.
   * If verification cannot be started: *VerifyClientListener.onError(final VerifyClient verifyClient, final com.nexmo.sdk.verify.event.VerifyError errorCode)* is invoked to describe the error.
 6. Supply the PIN code entered by the user to the *VerifyClient* instance in your App:
+
   ```java
   verifyClient.checkPinCode("1234");
   ```
@@ -114,7 +117,8 @@ In order to configure you Nexmo application for Google Cloud Messaging (GCM):
   **Note** This feature is not enabled yet in the Nexmo Dashboard, please contact productfeedback@nexmo.com to configure this.
 3. Enable GCM in your App: https://developers.google.com/mobile/add.
 4. Provide your GCM registration token to the NexmoClient: https://developers.google.com/cloud-messaging/android/client.
-5. Make sure your App handles the refresh tokens and updates *nexmoClient*.
+5. Make sure your App handles the refresh tokens and updates nexmoClient.
+
   ```java
   nexmoClient.setGcmRegistrationToken("MyGCMRegistrationToken");
   ```
