@@ -28,8 +28,10 @@ To develop with the Nexmo Verify SDK you need to:
 To use the Nexmo Verify SDK, you need to:
 
 Integrate the Verify SDK library into Android Studio. To do this:
-  1. In Android Studio, either open an existing project, or create a new one.
-  2. In Android Studio, update top-level *build.gradle* file to include dependency location:
+
+  1.In Android Studio, either open an existing project, or create a new one.
+
+  2.In Android Studio, update top-level *build.gradle* file to include dependency location:
 ```java
 allprojects {
     repositories {
@@ -40,18 +42,17 @@ allprojects {
     }
 }
 ```
-  3.  In Android Studio, update *build.gradle (Module: app)* to include:
-    ```java
-  repositories {
-      mavenCentral()
-  }
+  3.In Android Studio, update *build.gradle (Module: app)* to include:
+```java
+repositories {
+    mavenCentral()
+}
 
-  dependencies {
-      compile 'com.nexmo.sdk:verify:<SNAPSHOT version number>'
-  }
+dependencies {
+    compile 'com.nexmo.sdk:verify:<SNAPSHOT version number>'
+}
 ```
-  4.   To get the dependency Synchronize the project, click *File* > *Synchronize*.
-
+  4.To get the dependency Synchronize the project, click *File* > *Synchronize*.
 
 ##Integrate the Verify SDK<a name="integrate"></a>
 
