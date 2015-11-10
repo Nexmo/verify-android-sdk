@@ -1,0 +1,4 @@
+include ':app', ':verify'
+
+
+project(':verify').projectDir = new File('verifySDK')
