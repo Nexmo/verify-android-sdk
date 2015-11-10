@@ -69,7 +69,6 @@ public class SampleApplication extends Application {
                     .context(context)
                     .applicationId(Config.NexmoAppId)
                     .sharedSecretKey(Config.NexmoSharedSecretKey)
-                    .environmentHost(NexmoClient.ENVIRONMENT_HOST.PRODUCTION)
                     .build();
         } catch (ClientBuilderException e) {
             e.printStackTrace();
