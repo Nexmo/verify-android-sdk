@@ -64,7 +64,7 @@ public class GcmRegistrationIntentService extends IntentService {
                 }
                 // Notify Application class that registration has completed, so NexmoClient can update the GcmRegistrationToken.
                 Intent registrationComplete = new Intent(REGISTRATION_COMPLETE);
-                intent.putExtra(INTENT_EXTRA_PUSH_TOKEN, token);
+                registrationComplete.putExtra(INTENT_EXTRA_PUSH_TOKEN, token);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
             }
     }
