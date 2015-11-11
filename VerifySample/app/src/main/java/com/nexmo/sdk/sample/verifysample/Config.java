@@ -19,6 +19,6 @@ package com.nexmo.sdk.sample.verifysample;
  */
 public class Config {
 
-    public static final String NexmoAppId = "yourAppId";
-    public static final String NexmoSharedSecretKey = "YourSharedSecretKey";
+    public static final String NexmoAppId = "YourAppID";
+    public static final String NexmoSharedSecretKey = "YourSharedSecret";
 }

@@ -25,21 +25,24 @@ import com.nexmo.sdk.verify.core.response.BaseResponse;
  */
 public class VerifyRequest extends BaseRequest implements Parcelable {
 
-    private UserStatus userStatus;
+    private UserStatus userStatus = UserStatus.USER_NEW;
     private String pinCode;
+    private boolean standalone = false;
+
+    public VerifyRequest() {}
 
     public VerifyRequest(final String countryCode, final String phoneNumber) {
         super(countryCode, phoneNumber);
     }
 
-    public VerifyRequest() {
-        this.userStatus = UserStatus.USER_NEW;
+    public VerifyRequest(final String countryCode, final String phoneNumber, final boolean isStandalone) {
+        super(countryCode, phoneNumber);
+        this.standalone = isStandalone;
     }
 
-    public VerifyRequest(Parcel input) {
-        super(input);
-        this.userStatus = BaseResponse.getUserStatus(input.readString());
-        this.pinCode = input.readString();
+    public VerifyRequest(final String countryCode, final String phoneNumber, final String pinCode) {
+        super(countryCode, phoneNumber);
+        this.pinCode = pinCode;
     }
 
     public VerifyRequest(final String countryCode,
@@ -50,6 +53,13 @@ public class VerifyRequest extends BaseRequest implements Parcelable {
         super(countryCode, phoneNumber, token);
         this.userStatus = userStatus;
         this.pinCode = pinCode;
+    }
+
+    public VerifyRequest(Parcel input) {
+        super(input);
+        this.userStatus = BaseResponse.getUserStatus(input.readString());
+        this.pinCode = input.readString();
+        this.standalone= (input.readInt() == 1);
     }
 
     /**
@@ -75,6 +85,14 @@ public class VerifyRequest extends BaseRequest implements Parcelable {
         this.pinCode = pinCode;
     }
 
+    public void setStandalone(final boolean isStandalone){
+        this.standalone = isStandalone;
+    }
+
+    public boolean isStandalone(){
+        return this.standalone;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -96,6 +114,7 @@ public class VerifyRequest extends BaseRequest implements Parcelable {
         super.writeToParcel(out, flags);
         out.writeString(this.userStatus.toString());
         out.writeString(this.pinCode);
+        out.writeInt(this.standalone ? 1 : 0);
     }
 
 }

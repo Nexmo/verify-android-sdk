@@ -108,18 +108,21 @@ public class DeviceProperties {
      * @return The unique Id of the device.
      */
     public static String getDeviceId(Context context) throws NoDeviceIdException {
-        String IMEI = getIMEI(context);
-        if (TextUtils.isEmpty(IMEI)) {
-            String serialNo = getSerialNumber();
-            if (TextUtils.isEmpty(serialNo)) {
-                String android_ID =  getAndroid_ID(context);
-                if (!TextUtils.isEmpty(android_ID))
-                    return android_ID;
-                throw new NoDeviceIdException(TAG + " Device ID is not available.");
+        if (context != null) {
+            String IMEI = getIMEI(context);
+            if (TextUtils.isEmpty(IMEI)) {
+                String serialNo = getSerialNumber();
+                if (TextUtils.isEmpty(serialNo)) {
+                    String android_ID =  getAndroid_ID(context);
+                    if (!TextUtils.isEmpty(android_ID))
+                        return android_ID;
+                    throw new NoDeviceIdException(TAG + " Device ID is not available.");
+                }
+                return serialNo;
             }
-            return serialNo;
+            return IMEI;
         }
-        return IMEI;
+        return null;
     }
 
     /**

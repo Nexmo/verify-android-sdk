@@ -25,18 +25,18 @@ import com.nexmo.sdk.verify.core.event.GenericExceptionListener;
  * <p> To unregister from receiving events {@link VerifyClient#removeVerifyListeners()} or
  * {@link VerifyClient#removeVerifyListener(VerifyClientListener)} can be called at all times.
  *
- * <p> When the verification is successfully started {@link VerifyClientListener#onVerifyInProgress(VerifyClient)} is invoked.
+ * <p> When the verification is successfully started {@link VerifyClientListener#onVerifyInProgress(VerifyClient,UserObject)} is invoked.
  *
  * <p> If the verification cannot be started {@link VerifyClientListener#onError} is invoked describing the error.
  *
  * <p> After the correct PIN code has been sent via {@link VerifyClient#checkPinCode(String)} a successful verification
- * ends up with {@link VerifyClientListener#onUserVerified(VerifyClient)} being triggered.
+ * ends up with {@link VerifyClientListener#onUserVerified(VerifyClient,UserObject)} being triggered.
  *
  *  <p> If the verification is in progress but it cannot be completed due to either:
  *  <li>
- *      <ul>Incorrect PIN code being submitted, then {@link VerifyClientListener#onError(VerifyClient, VerifyError)}
+ *      <ul>Incorrect PIN code being submitted, then {@link VerifyClientListener#onError(VerifyClient, VerifyError,UserObject)}
  *          is invoked with {@link VerifyError#INVALID_PIN_CODE}</ul>
- *      <ul>Incorrect PIN code being submitted too many times, then {@link VerifyClientListener#onError(VerifyClient, VerifyError)}
+ *      <ul>Incorrect PIN code being submitted too many times, then {@link VerifyClientListener#onError(VerifyClient, VerifyError,UserObject)}
  *          is invoked with {@link com.nexmo.sdk.verify.event.VerifyError#INVALID_CODE_TOO_MANY_TIMES}</ul>
  *  </li>
  *
@@ -44,18 +44,19 @@ import com.nexmo.sdk.verify.core.event.GenericExceptionListener;
  * <pre>
  *     myVerifyClient.addVerifyClientListener(new VerifyClientListener() {
  *         &#64;Override
- *         public void onVerifyInProgress(final VerifyClient verifyClient) {
+ *         public void onVerifyInProgress(final VerifyClient verifyClient, final UserObject user) {
  *              // Update the application UI here if needed.
  *              // The user should received the PIN code anytime now.
+ *              // Verify was initiated for user.getPhoneNumber().
  *         }
  *
  *         &#64;Override
- *         public void onUserVerified(final VerifyClient verifyClient) {
+ *         public void onUserVerified(final VerifyClient verifyClient, final UserObject user) {
  *              // Update the application UI here if needed.
  *         }
  *
  *         &#64;Override
- *         public void onError(final VerifyClient verifyClient, final com.nexmo.sdk.verify.event.VerifyError errorCode) {
+ *         public void onError(final VerifyClient verifyClient, final com.nexmo.sdk.verify.event.VerifyError errorCode, final UserObject user) {
  *              // Update the application UI here if needed.
  *         }
  *
@@ -74,23 +75,27 @@ public interface VerifyClientListener extends GenericExceptionListener {
      * {@link VerifyClient#checkPinCode(String)}  at a later stage, otherwise it would fail.
      *
      * @param verifyClient The verify client that triggered a new verify.
+     * @param user         The user object that triggered a new verify.
      */
-     public void onVerifyInProgress(final VerifyClient verifyClient);
+     public void onVerifyInProgress(final VerifyClient verifyClient, final UserObject user);
 
     /**
      * Called when a verification is completed, or the user was already verified.
      * A successful verification can be achieved after the PIN code Nexmo sent has been matched with the one provided by the user.
      *
      * @param verifyClient The verify client that triggered a new verify.
+     * @param user         The user object that triggered a new verify.
      */
-     public void onUserVerified(final VerifyClient verifyClient);
+     public void onUserVerified(final VerifyClient verifyClient, final UserObject user);
 
     /**
      * The request has been rejected or failed.
      * @param verifyClient The verify client that triggered a new verify.
-     * @param errorCode The {@link VerifyError} codes to describe the error.
+     * @param errorCode    The {@link VerifyError} codes to describe the error.
+     * @param user         The user object that triggered a new verify.
      */
     public void onError(final VerifyClient verifyClient,
-                        final com.nexmo.sdk.verify.event.VerifyError errorCode);
+                        final com.nexmo.sdk.verify.event.VerifyError errorCode,
+                        final UserObject user);
 
 }

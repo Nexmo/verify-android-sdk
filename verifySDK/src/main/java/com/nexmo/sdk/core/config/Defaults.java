@@ -22,5 +22,8 @@ public class Defaults {
     public static final int CONNECTION_TIMEOUT = 15 * 1000;
     public static final int CONNECTION_READ_TIMEOUT = 10 * 1000;
     public static final int MIN_CODE_LENGTH = 4;
+    public static final int MAX_CODE_LENGTH = 6;
+    public static final int MIN_PHONE_NUMBER_LENGTH = 2;
+    public static final int MAX_PHONE_NUMBER_LENGTH = 15;
 
 }

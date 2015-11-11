@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/content_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/nexmo_activity_vertical_margin"
+        android:layout_margin="@dimen/nexmo_activity_layout_margin">
+
+        <!-- Verify started for specific number -->
+        <TextView
+            android:id="@+id/check_code_info_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:padding="@dimen/nexmo_activity_item_padding"
+            android:layout_marginTop="56dp"
+            android:textColor="@android:color/black"/>
+
+        <!-- Code input area code -->
+        <LinearLayout
+            android:id="@+id/phone_number_ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/nexmo_activity_vertical_margin">
+            <EditText
+                android:id="@+id/phone_number_et"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="4"
+                android:layout_marginLeft="@dimen/nexmo_activity_item_margin"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:inputType="phone"
+                android:gravity="bottom"
+                android:hint="@string/nexmo_check_code_hint"/>
+            <ProgressBar
+                android:id="@+id/action_progress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="@dimen/nexmo_activity_item_margin"
+                android:clickable="false"
+                android:indeterminate="true"
+                android:indeterminateDrawable="@drawable/nexmo_activity_indicator"/>
+        </LinearLayout>
+
+        <!-- Send Code nexmo_verify_button.  -->
+        <Button
+            android:id="@+id/continue_check_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/nexmo_verify_button"
+            android:layout_gravity="center"
+            android:onClick="onCheck"
+            android:padding="@dimen/nexmo_activity_item_padding"
+            android:layout_marginTop="@dimen/nexmo_activity_vertical_margin"
+            android:text="@string/nexmo_check_code"
+            android:textColor="@android:color/white"/>
+
+        <!-- Cancel is available only 30seconds after verify is started. -->
+        <Button
+            android:id="@+id/cancel_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="@dimen/nexmo_activity_item_padding"
+            android:layout_marginTop="@dimen/nexmo_activity_vertical_small_margin"
+            android:text="@string/nexmo_verify_cancel"
+            android:onClick="onCancelVerification"
+            android:background="@drawable/nexmo_secondary_button"
+            android:textColor="@color/nexmo_default_background"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/try_again_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="@dimen/nexmo_activity_item_padding"
+            android:layout_marginTop="@dimen/nexmo_activity_vertical_small_margin"
+            android:text="@string/nexmo_try_again"
+            android:onClick="onTryAgain"
+            android:background="@drawable/nexmo_secondary_button"
+            android:textColor="@color/nexmo_default_background"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/call_instead_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="@dimen/nexmo_activity_item_padding"
+            android:layout_marginTop="@dimen/nexmo_activity_vertical_small_margin"
+            android:text="@string/nexmo_call_instead"
+            android:onClick="onCallInstead"
+            android:background="@drawable/nexmo_secondary_button"
+            android:textColor="@color/nexmo_default_background"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/footer_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:padding="@dimen/nexmo_activity_item_padding"
+            android:textColor="@android:color/black"/>
+    </LinearLayout>
+</ScrollView>

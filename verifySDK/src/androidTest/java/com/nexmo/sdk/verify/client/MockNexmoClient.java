@@ -31,7 +31,6 @@ public class MockNexmoClient {
                     .context(new MockContext())
                     .applicationId("app_dummy")
                     .sharedSecretKey("secret_dummy")
-                    .environmentHost(NexmoClient.ENVIRONMENT_HOST.PRODUCTION)
                     .build();
         } catch (ClientBuilderException e) {
             e.printStackTrace();
@@ -42,7 +41,7 @@ public class MockNexmoClient {
         return nexmoClient;
     }
 
-    public NexmoClient.ENVIRONMENT_HOST getClientHost() {
+    public String getClientHost() {
         return nexmoClient.getEnvironmentHost();
     }
 

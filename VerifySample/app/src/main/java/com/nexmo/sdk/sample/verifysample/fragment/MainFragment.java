@@ -43,6 +43,7 @@ import com.nexmo.sdk.util.DeviceUtil;
 import com.nexmo.sdk.verify.client.VerifyClient;
 import com.nexmo.sdk.verify.event.*;
 import com.nexmo.sdk.verify.event.VerifyError;
+import com.nexmo.sdk.verify.event.UserObject;
 
 /**
  * Main fragment containing a simple view for initiating a verify request.
@@ -88,20 +89,20 @@ public class MainFragment extends Fragment {
         final SampleApplication application = (SampleApplication) activity.getApplication();
         application.getVerifyClient().addVerifyListener(new VerifyClientListener() {
             @Override
-            public void onVerifyInProgress(final VerifyClient verifyClient) {
+            public void onVerifyInProgress(final VerifyClient verifyClient, final UserObject userObject) {
                 Log.d(TAG, "onVerifyInProgress");
                 // When verification is in progress we can jump to the next screen that allows PIN code input.
                 getFragmentManager().beginTransaction().replace(R.id.container, new CheckCodeFragment()).addToBackStack("check").commit();
             }
 
             @Override
-            public void onUserVerified(final VerifyClient verifyClient) {
+            public void onUserVerified(final VerifyClient verifyClient, final UserObject userObject) {
                 Log.d(TAG, "This User is already verified!");
                 showToast("This User is already verified!");
             }
 
             @Override
-            public void onError(final VerifyClient verifyClient, final com.nexmo.sdk.verify.event.VerifyError errorCode) {
+            public void onError(final VerifyClient verifyClient, final com.nexmo.sdk.verify.event.VerifyError errorCode, final UserObject userObject) {
                 Log.d(TAG, "onError " + errorCode);
                 // If  the verification is already in progress, switch to CheckCodeFragment.
                 if(errorCode == VerifyError.VERIFICATION_ALREADY_STARTED)

@@ -33,6 +33,9 @@ public class ResultCodes {
     /** Generic internal error, the service might be down for the moment. Please try again later. */
     public static final int INTERNAL_ERROR = 5;
 
+    /** Nexmo platform was unable to process this message. */
+    public static final int CANNOT_PROCESS_MESSAGE = 6;
+
     /** Your account does not have sufficient credit to process this request. */
     public static final int QUOTA_EXCEEDED = 9;
 
@@ -78,4 +81,6 @@ public class ResultCodes {
     /**  Logout is not available because the user is not in verified status. */
     public static final int INVALID_USER_STATUS_FOR_LOGOUT = 63;
 
+    /** Stateless verification cannot be performed for a user that is not VERIFIED **/
+    public static final int INVALID_USER_STATUS_FOR_STATELESS_VERIFICATION_REQUEST = 66;
 }

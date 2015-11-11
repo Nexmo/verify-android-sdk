@@ -35,6 +35,20 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
             </intent-filter>
         </service>
+        <activity
+            android:name=".verify.ui.VerifyPhoneNumberActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize"
+            android:noHistory="false"
+            android:taskAffinity="com.nexmo.sdk.verify.ui">
+        </activity>
+        <activity
+            android:name=".verify.ui.CheckPhoneNumberActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize"
+            android:launchMode="standard"
+            android:taskAffinity="com.nexmo.sdk.verify.ui">
+        </activity>
     </application>
 
 </manifest>

@@ -30,15 +30,15 @@ public class VerifyClientTest {
     private VerifyClient verifyClient;
     private final VerifyClientListener listener = new VerifyClientListener() {
         @Override
-        public void onVerifyInProgress(VerifyClient verifyClient) {
+        public void onVerifyInProgress(VerifyClient verifyClient, UserObject userObject) {
         }
 
         @Override
-        public void onUserVerified(VerifyClient verifyClient) {
+        public void onUserVerified(VerifyClient verifyClient, UserObject userObject) {
         }
 
         @Override
-        public void onError(VerifyClient verifyClient, com.nexmo.sdk.verify.event.VerifyError errorCode) {
+        public void onError(VerifyClient verifyClient, com.nexmo.sdk.verify.event.VerifyError errorCode, UserObject userObject) {
         }
 
         @Override

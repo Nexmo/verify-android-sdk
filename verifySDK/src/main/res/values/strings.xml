@@ -1,2 +1,30 @@
 <resources>
+    <!-- verify_phone_number layout -->
+    <string name="nexmo_verify_phone_hint">Please enter your phone number</string>
+    <string name="nexmo_verify_country_name_hint">Please select your country name.</string>
+    <string name="nexmo_verify_number_enter">Your phone number</string>
+    <string name="nexmo_verify_send_code">SEND CODE</string>
+    <string name="nexmo_verify_send_code_toggle">SENDING CODE</string>
+    <string name="nexmo_verify_invalid_number">Invalid Number</string>
+
+    <!-- check_pin_code layout -->
+    <string name="nexmo_sms_code_info">We sent a code to %1$s</string>
+    <string name="nexmo_tts_code_info">We are calling %1$s with a code</string>
+    <string name="nexmo_check_code_hint">Enter your code</string>
+    <string name="nexmo_check_pin_error">Invalid PIN</string>
+    <string name="nexmo_check_pin_user_failed">Verification failed: Invalid PIN too many times.</string>
+    <string name="nexmo_check_pin_too_short">PIN too short</string>
+    <string name="nexmo_check_pin_too_long">PIN too long</string>
+    <string name="nexmo_check_code">CONTINUE</string>
+    <string name="nexmo_call_instead">CALL INSTEAD</string>
+    <string name="nexmo_try_again">TRY AGAIN</string>
+    <string name="nexmo_command_not_allowed">You cannot perform this action anymore</string>
+
+    <!-- common strings -->
+    <string name="nexmo_verify_dialog_title">Verify</string>
+    <string name="nexmo_verify_dialog_message_verified">You are verified</string>
+    <string name="nexmo_verify_dialog_message_failed">Verification failed.</string>
+    <string name="nexmo_verify_dialog_message_canceled">Verification canceled.</string>
+    <string name="nexmo_verify_dialog_message_cancel_failed">Cancellation cannot be performed anymore.</string>
+    <string name="nexmo_verify_cancel">CANCEL</string>
 </resources>

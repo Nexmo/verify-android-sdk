@@ -40,9 +40,8 @@ import com.nexmo.sdk.core.config.Config;
 import com.nexmo.sdk.core.config.Defaults;
 import com.nexmo.sdk.core.device.DeviceProperties;
 import com.nexmo.sdk.core.request.RequestSigning;
-import com.nexmo.sdk.verify.core.service.BaseService;
 
-import com.nexmo.sdk.NexmoClient;
+import com.nexmo.sdk.verify.core.service.BaseService;
 import com.nexmo.sdk.verify.client.InternalNetworkException;
 
 import com.nexmo.sdk.BuildConfig;
@@ -124,15 +123,15 @@ public class Client implements ConnectionClient {
      * @throws MalformedURLException if an error occurs while opening the connection.
      */
     private static URL constructUrlGetConnection(Map<String, String> requestParams,
-                                                 String methodName,
-                                                 NexmoClient.ENVIRONMENT_HOST host) throws MalformedURLException {
+                                                 final String methodName,
+                                                 final String host) throws MalformedURLException {
         List<NameValuePair> getParams = new ArrayList<>();
         for (Map.Entry<String, String> entry : requestParams.entrySet()) {
             getParams.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
         }
 
         String paramString = URLEncodedUtils.format(getParams, HTTP.UTF_8);
-        return new URL((host == NexmoClient.ENVIRONMENT_HOST.PRODUCTION ? Config.ENDPOINT_PRODUCTION : Config.ENDPOINT_SANDBOX) + methodName + paramString);
+        return new URL(host + methodName + paramString);
     }
 
     private static String getResponseString(InputStream inputStream) throws IOException {

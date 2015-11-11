@@ -35,7 +35,6 @@ public class NexmoClientTest {
                  .context(new MockContext())
                 .applicationId("app_dummy")
                 .sharedSecretKey("secret_dummy")
-                .environmentHost(NexmoClient.ENVIRONMENT_HOST.PRODUCTION)
                 .build();
     }
 
@@ -65,7 +64,6 @@ public class NexmoClientTest {
             new NexmoClient.NexmoClientBuilder()
                     .context(new MockContext())
                     .sharedSecretKey("xyz")
-                    .environmentHost(NexmoClient.ENVIRONMENT_HOST.PRODUCTION)
                     .build();
             assertTrue(TAG + " expectedConfigNoAppId, did not throw exception.", false);
         } catch (ClientBuilderException exception) {
@@ -78,7 +76,6 @@ public class NexmoClientTest {
         try {
             new NexmoClient.NexmoClientBuilder().context(new MockContext())
                     .applicationId("app_dummy")
-                    .environmentHost(NexmoClient.ENVIRONMENT_HOST.PRODUCTION)
                     .build();
             assertTrue(TAG + " expectedConfigNoSecretKey, did not throw exception.", false);
         } catch (ClientBuilderException exception) {
