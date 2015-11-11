@@ -35,8 +35,6 @@ public class GcmRegistrationIntentService extends IntentService {
     public static final String REGISTRATION_COMPLETE = "registrationComplete";
     public static final String INTENT_EXTRA_SENDER_ID = "SENDER_ID";
     public static final String INTENT_EXTRA_PUSH_TOKEN = "PUSH_TOKEN";
-    // Please provide here your SENDER_ID:
-    public static final String SENDER_ID = "919459387407";
     private static final String TAG = GcmRegistrationIntentService.class.getSimpleName();
 
     /**
