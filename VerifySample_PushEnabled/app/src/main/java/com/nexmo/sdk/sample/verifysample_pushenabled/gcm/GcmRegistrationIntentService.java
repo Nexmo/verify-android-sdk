@@ -35,8 +35,6 @@ public class GcmRegistrationIntentService extends IntentService {
     public static final String REGISTRATION_COMPLETE = "registrationComplete";
     public static final String INTENT_EXTRA_SENDER_ID = "SENDER_ID";
     public static final String INTENT_EXTRA_PUSH_TOKEN = "PUSH_TOKEN";
-    // Please provide here your SENDER_ID:
-    public static final String SENDER_ID = "919459387407";
     private static final String TAG = GcmRegistrationIntentService.class.getSimpleName();
 
     /**
@@ -64,7 +62,7 @@ public class GcmRegistrationIntentService extends IntentService {
                 }
                 // Notify Application class that registration has completed, so NexmoClient can update the GcmRegistrationToken.
                 Intent registrationComplete = new Intent(REGISTRATION_COMPLETE);
-                intent.putExtra(INTENT_EXTRA_PUSH_TOKEN, token);
+                registrationComplete.putExtra(INTENT_EXTRA_PUSH_TOKEN, token);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
             }
     }
