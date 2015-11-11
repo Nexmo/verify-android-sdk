@@ -9,7 +9,7 @@ Verify SDK:
 •	Enables you to re-verify users with push notifications.
 •	Offers a UX framework to integrate in your App.
 
-Learn how to use Verify SDK at [Verify Android SDK documentation] (https://docs.nexmo.com/libraries/verify-sdk/verify-sdk-for-android)
+Learn how to use Verify SDK on [The official documentation page] (https://docs.nexmo.com/libraries/verify-sdk/verify-sdk-for-android)
 
 Feel free to checkout the [Verify SDK codebase] (https://github.com/Nexmo/verify-android-sdk/blob/master/verifySDK) if you wish to contribute to our open source library.
 
