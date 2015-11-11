@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
     private void registerGcm() {
         Intent intent = new Intent(this, GcmRegistrationIntentService.class);
         intent.setAction(GcmRegistrationIntentService.ACTION_REGISTER);
-        intent.putExtra(GcmRegistrationIntentService.INTENT_EXTRA_SENDER_ID, GcmRegistrationIntentService.SENDER_ID);
+        intent.putExtra(GcmRegistrationIntentService.INTENT_EXTRA_SENDER_ID, Config.PushSenderID);
         startService(intent);
     }
 
