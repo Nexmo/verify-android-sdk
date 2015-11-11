@@ -21,6 +21,10 @@ import android.util.Log;
 import com.nexmo.sdk.NexmoClient;
 import com.nexmo.sdk.core.client.ClientBuilderException;
 import com.nexmo.sdk.verify.client.VerifyClient;
+import com.nexmo.sdk.verify.event.UserObject;
+import com.nexmo.sdk.verify.event.VerifyClientListener;
+
+import java.io.IOException;
 
 /**
  * Used for maintaining global verifyClient instance state.
@@ -68,6 +72,27 @@ public class SampleApplication extends Application {
             return;
         }
         this.verifyClient = new VerifyClient(nexmoClient);
+        this.verifyClient.addVerifyListener(new VerifyClientListener() {
+            @Override
+            public void onVerifyInProgress(VerifyClient verifyClient, UserObject user) {
+                Log.d(TAG, "onVerifyInProgress for number: " + user.getPhoneNumber());
+            }
+
+            @Override
+            public void onUserVerified(VerifyClient verifyClient, UserObject user) {
+                Log.d(TAG, "onUserVerified for number: " + user.getPhoneNumber());
+            }
+
+            @Override
+            public void onError(VerifyClient verifyClient, com.nexmo.sdk.verify.event.VerifyError errorCode, UserObject user) {
+                Log.d(TAG, "onError: " + errorCode + " for number: " + user.getPhoneNumber());
+            }
+
+            @Override
+            public void onException(IOException exception) {
+                Log.d(TAG, "onException");
+            }
+        });
     }
 
 }
