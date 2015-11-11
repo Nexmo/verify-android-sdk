@@ -4,10 +4,10 @@ The Nexmo Verify SDK
 
 With Verify SDK you add password replacement, 2-factor authentication, or user and transaction verification to your App with a single line of code.
 Verify SDK:
-•	Adds a new level of security to your App by tying phone numbers to unique device IDs.
-•	Provides user management support. You easily manage user identity across multiple devices and platforms without building a complex user management backend. No need to create and manage a user database, or query your database on each login request.
-•	Enables you to re-verify users with push notifications.
-•	Offers a UX framework to integrate in your App.
+* Adds a new level of security to your App by tying phone numbers to unique device IDs.
+* Provides user management support. You easily manage user identity across multiple devices and platforms without building a complex user management backend. No need to create and manage a user database, or query your database on each login request.
+* Enables you to re-verify users with push notifications.
+* Offers a UX framework to integrate in your App.
 
 Learn how to use Verify SDK on [The official documentation page] (https://docs.nexmo.com/libraries/verify-sdk/verify-sdk-for-android)
 
