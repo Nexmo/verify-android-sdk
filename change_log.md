@@ -99,3 +99,11 @@ Verify Beta 0.6
 
 - Published verify:1.0.0-SNAPSHOT to maven central.
 - Updated the samples to point to the external dependency, and moved away from using internal aar in flatDir.
+
+Verify 1.0
+========
+11 November 2015
+
+- Published verify:1.0.1-SNAPSHOT
+- Created a new sample VerifyQuickSample that demonstrates the new VerifyClient.getgetVerifiedUserFromDefaultManagedUI() feature.
+- Added standalone vertifications via VerifyClient.verifyStandalone
