@@ -13,9 +13,11 @@
 
 package com.nexmo.sdk.verify.event;
 
+import com.nexmo.sdk.verify.client.VerifyClient;
+
 /**
  * Verify error codes.
- * Identifies the error type which triggered a {@link VerifyClientListener#onError(com.nexmo.sdk.verify.client.VerifyClient, VerifyError)} event.
+ * Identifies the error type which triggered a {@link VerifyClientListener#onError(com.nexmo.sdk.verify.client.VerifyClient, VerifyError, UserObject)} event.
  */
 public enum VerifyError {
 
@@ -92,6 +94,13 @@ public enum VerifyError {
      * </ul>
      */
     COMMAND_NOT_SUPPORTED,
+    /**
+     * Stateless verification not allowed. User must be in {@link UserStatus#USER_VERIFIED} state in order to perform
+     * {@link com.nexmo.sdk.verify.client.VerifyClient#verifyStandalone(String, String)}
+     * Please perform a {@link com.nexmo.sdk.verify.client.VerifyClient#getVerifiedUser(String, String)} or
+     * {@link VerifyClient#getVerifiedUserFromDefaultManagedUI()}} before doing any stateless verifications.
+     */
+    INVALID_USER_STATUS_FOR_STATELESS_VERIFICATION,
     /** The SDK revision is not supported anymore. */
     SDK_REVISION_NOT_SUPPORTED,
     /** Current Android OS version is not supported. */

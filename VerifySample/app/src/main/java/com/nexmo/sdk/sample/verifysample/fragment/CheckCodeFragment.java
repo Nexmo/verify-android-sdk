@@ -74,17 +74,17 @@ public class CheckCodeFragment extends Fragment {
         final SampleApplication application = (SampleApplication) activity.getApplication();
         application.getVerifyClient().addVerifyListener(new VerifyClientListener() {
             @Override
-            public void onVerifyInProgress(final VerifyClient verifyClient) {
+            public void onVerifyInProgress(final VerifyClient verifyClient, final UserObject userObject) {
             }
 
             @Override
-            public void onUserVerified(final VerifyClient verifyClient) {
+            public void onUserVerified(final VerifyClient verifyClient, final UserObject userObject) {
                 Log.d(TAG, "onUserVerified ");
                 showToast("User verified!");
             }
 
             @Override
-            public void onError(final VerifyClient verifyClient, final com.nexmo.sdk.verify.event.VerifyError errorCode) {
+            public void onError(final VerifyClient verifyClient, final com.nexmo.sdk.verify.event.VerifyError errorCode, final UserObject userObject) {
                 Log.d(TAG, "onError " + errorCode);
                 showToast("onError.code: " + errorCode.toString());
             }

@@ -23,13 +23,13 @@ import com.nexmo.sdk.NexmoClient;
  */
 public class Request {
 
-    private final NexmoClient.ENVIRONMENT_HOST url;
+    private final String url;
     private final String secretKey;
     /** The method name, appended to the ENDPOINT: production/sandbox. **/
     private final String method;
     private final TreeMap<String, String> params;
 
-    public Request(final NexmoClient.ENVIRONMENT_HOST url,
+    public Request(final String url,
                    final String secretKey,
                    final String method,
                    final Map<String,String> params) {
@@ -39,7 +39,7 @@ public class Request {
         this.params = new TreeMap<>(params);
     }
 
-    public NexmoClient.ENVIRONMENT_HOST getUrl() {
+    public String getUrl() {
         return this.url;
     }
 

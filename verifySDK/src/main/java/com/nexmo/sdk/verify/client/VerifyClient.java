@@ -13,25 +13,22 @@
 
 package com.nexmo.sdk.verify.client;
 
-import java.io.IOException;
-import java.util.HashSet;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.BuildConfig;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.nexmo.sdk.BuildConfig;
 import com.nexmo.sdk.NexmoClient;
-import com.nexmo.sdk.core.gcm.VerifyGcmListenerService;
-import com.nexmo.sdk.util.DeviceUtil;
-
 import com.nexmo.sdk.core.client.ResultCodes;
 import com.nexmo.sdk.core.config.Defaults;
-
+import com.nexmo.sdk.core.gcm.VerifyGcmListenerService;
+import com.nexmo.sdk.util.DeviceUtil;
 import com.nexmo.sdk.verify.core.event.BaseClientListener;
 import com.nexmo.sdk.verify.core.event.CheckServiceListener;
 import com.nexmo.sdk.verify.core.event.CommandServiceListener;
@@ -44,13 +41,18 @@ import com.nexmo.sdk.verify.core.service.CheckService;
 import com.nexmo.sdk.verify.core.service.CommandService;
 import com.nexmo.sdk.verify.core.service.SearchService;
 import com.nexmo.sdk.verify.core.service.VerifyService;
-
 import com.nexmo.sdk.verify.event.Command;
 import com.nexmo.sdk.verify.event.CommandListener;
 import com.nexmo.sdk.verify.event.SearchListener;
+import com.nexmo.sdk.verify.event.UserObject;
 import com.nexmo.sdk.verify.event.UserStatus;
 import com.nexmo.sdk.verify.event.VerifyClientListener;
 import com.nexmo.sdk.verify.event.VerifyError;
+import com.nexmo.sdk.verify.ui.VerifyPhoneNumberActivity;
+import com.nexmo.sdk.verify.ui.response.ManagedVerifyResponse;
+
+import java.io.IOException;
+import java.util.HashSet;
 
 /**
  * The {@link com.nexmo.sdk.verify.client.VerifyClient} provides the entry point to verification flow provided by the Nexmo SDK.
@@ -62,17 +64,17 @@ import com.nexmo.sdk.verify.event.VerifyError;
  *     VerifyClient myVerifyClient = new VerifyClient(myNexmoClient);
  *     myVerifyClient.addVerifyListener(new VerifyClientListener() {
  *         &#64;Override
- *         public void onVerifyInProgress(final VerifyClient verifyClient) {
+ *         public void onVerifyInProgress(final VerifyClient verifyClient, final UserObject user) {
  *              // Update the application UI here if needed. Usually provide an input field in the UI that allows PIN code input.
  *         }
  *
  *         &#64;Override
- *         public void onUserVerified(final VerifyClient verifyClient) {
+ *         public void onUserVerified(final VerifyClient verifyClient, final UserObject user) {
  *              // Update the application UI here if needed.
  *         }
  *
  *         &#64;Override
- *         public void onError(final VerifyClient verifyClient, final com.nexmo.sdk.verify.event.VerifyError errorCode) {
+ *         public void onError(final VerifyClient verifyClient, final com.nexmo.sdk.verify.event.VerifyError errorCode, final UserObject user) {
  *              // Update the application UI here if needed.
  *         }
  *
@@ -87,14 +89,14 @@ import com.nexmo.sdk.verify.event.VerifyError;
  * <pre>
  *     myVerifyClient.checkPinCode("pinCode");
  * </pre>
- *  A successful verification will be completed once the {@link VerifyClientListener#onUserVerified(VerifyClient)} event is invoked.
+ *  A successful verification will be completed once the {@link VerifyClientListener#onUserVerified(VerifyClient, com.nexmo.sdk.verify.event.UserObject)} event is invoked.
  *
  * <p> Checking if the current user is verified already or not is possible via {@link VerifyClient#getUserStatus(String, String, SearchListener)} .
  *     Remember to set a {@link com.nexmo.sdk.verify.event.SearchListener} to receive the user status.
  * <p> Example usage:
  * <pre>
  *     VerifyClient myVerifyClient = new VerifyClient(myNexmoClient);
- *     myVerifyClient.isUserVerified(myCountryCode, myPhoneNo, new SearchListener() {
+ *     myVerifyClient.getUserStatus(myCountryCode, myPhoneNo, new SearchListener() {
  *         &#64;Override
  *         public void onUserStatus(final UserStatus userStatus) {
  *              // Update the application UI here if needed.
@@ -140,14 +142,25 @@ import com.nexmo.sdk.verify.event.VerifyError;
 public class VerifyClient implements BaseClientListener {
 
     public static final String TAG = VerifyClient.class.getSimpleName();
+    public static final String ACTION_BROADCAST_COMMAND_TIMER = "com.nexmo.sdk.verify.client.BROADCAST_MESSAGE";
+    public static final String MESSAGE_KEY_TIMER_STATE_DONE = "timer_state_done";
     private NexmoClient nexmoClient;
     private VerifyRequest verifyRequest = new VerifyRequest();
     private HashSet<VerifyClientListener> verifyClientListeners;
+    // when userStatus becomes PENDING wait for 30s before enabling all the commands.
+    private Handler commandsHandler = new Handler();
+    private final Runnable commandsRunnable = new Runnable() {
+        @Override
+        public void run() {
+            broadcastCommandTimerDone();
+        }
+    };
     // Internal listeners.
     private VerifyServiceListener verifyServiceListener;
     private CheckServiceListener checkServiceListener;
     private SearchServiceListener searchServiceListener;
     private BroadcastReceiver gcmPayloadBroadcastReceiver;
+    private BroadcastReceiver managedVerifyUIReceiver;
 
     /**
      * Acquire a new {@link VerifyClient} instance.
@@ -220,25 +233,33 @@ public class VerifyClient implements BaseClientListener {
     /**
      * Verify the user of the current handset, with the provided country code and phone number.
      * Retrieve a verified user object for the current handset.
+     * Use this method instead of {@link VerifyClient#getVerifiedUserFromDefaultManagedUI()} when you want to handle
+     * all the UI-related components.
      * <p> In the case of a transient (typically network related) error an InternalNetworkException will be thrown.
-     * <p> Listen to {@link VerifyClientListener} events to be notified of user verify state, as well as error events.
+     * <p> Add a {@link VerifyClientListener} to this {@link VerifyClient} before by calling {@link VerifyClient#addVerifyListener(VerifyClientListener)}
+     * to be notified of user verify state, as well as error events.
      *
      * @param countryCode The country code of the current SIM card.
      * @param phoneNumber The phone number of the current handset. Only mobile numbers are accepted.
      */
     public void getVerifiedUser(final String countryCode,
                                 final String phoneNumber) {
-        warnIfMissingListener();
+        getVerifiedUser(countryCode, phoneNumber, false);
+    }
 
-        if (isVerifyMissingInput(countryCode, phoneNumber))
-            notifyErrorListeners(VerifyError.NUMBER_REQUIRED);
-        else {
-            updateVerifyRequest(countryCode, phoneNumber);
-            setupVerifyClientListeners();
-            VerifyService service = VerifyService.getInstance();
-            service.init(this.verifyRequest);
-            service.start(this.nexmoClient, this.verifyServiceListener);
-        }
+    /**
+     * Stateless verification of an already verified user of the current handset, with the provided country code and phone number.
+     * Retrieve a verified user object for the current handset.
+     * <p> In the case of a transient (typically network related) error an InternalNetworkException will be thrown.
+     * <p> Add a {@link VerifyClientListener} to this {@link VerifyClient} before by calling {@link VerifyClient#addVerifyListener(VerifyClientListener)}
+     * to be notified of user verify state, as well as error events.
+     *
+     * @param countryCode The country code of the current SIM card.
+     * @param phoneNumber The phone number of the current handset. Only mobile numbers are accepted.
+     */
+    public void verifyStandalone(final String countryCode,
+                                 final String phoneNumber) {
+        getVerifiedUser(countryCode, phoneNumber, true);
     }
 
     /**
@@ -301,11 +322,11 @@ public class VerifyClient implements BaseClientListener {
      *     <li>{@link com.nexmo.sdk.verify.event.Command#CANCEL} Using command 'Cancel', an outstanding request may be
      *     cancelled and a new one issued. This approach, helps you to trigger the same channel as the first attempt,
      *     since it initiates the Verification flow all over again. This mimics the traditional "Retry" or "Correct my number"
-     *     button, where a user initiates Verify for the same or a new number because something went wrong.</li>
+     *     nexmo_verify_button, where a user initiates Verify for the same or a new number because something went wrong.</li>
      *     <li>{@link com.nexmo.sdk.verify.event.Command#TRIGGER_NEXT_EVENT} Using the command 'trigger_next_event',
      *     Verify can be instructed to failover immediately, instead of waiting for the default duration. This will trigger
      *     the next attempt to deliver the verification code, typically over Text to Speech. A relatable way to think of
-     *     this is a "Did not receive your SMS?" or "Call me instead" button; which may be made actionable if you determine
+     *     this is a "Did not receive your SMS?" or "Call me instead" nexmo_verify_button; which may be made actionable if you determine
      *     that the phone number should have good cellular connectivity.</li>
      * </ul>
      * </p>
@@ -339,6 +360,25 @@ public class VerifyClient implements BaseClientListener {
             service.start(this.nexmoClient,
                     commandServiceListener);
         }
+    }
+
+    /**
+     * Start the verify flow with the pre-defined UI inflated.
+     * Use this method instead of {@link VerifyClient#getVerifiedUser(String, String)} when you don't want to setup any UI in place.
+     * <p> The end user will be be responsible for providing the country and phone number of the device he is trying to verify.
+     * <p> Listen to {@link VerifyClientListener} events to be notified of user verify state, as well as error events during the automated flow.
+     * There is no action required after this step, just hang on and wait for verify completion event {@link VerifyClientListener#onUserVerified(VerifyClient, com.nexmo.sdk.verify.event.UserObject)} (String)}
+     * Upon completion you will only get the phoneNumber for which the user tried to verify, regardless of the outcome.
+     *
+     * <p> In the case of a transient (typically network related) error an InternalNetworkException will be thrown.
+     * <p> Add a {@link VerifyClientListener} to this {@link VerifyClient} before by calling {@link VerifyClient#addVerifyListener(VerifyClientListener)}
+     * to be notified of user verify state, as well as error events.
+     */
+    public void getVerifiedUserFromDefaultManagedUI() {
+        warnIfMissingListener();
+
+        setManagedUIBroadcastReceiver();
+        launchView(VerifyPhoneNumberActivity.class);
     }
 
     /**
@@ -401,9 +441,11 @@ public class VerifyClient implements BaseClientListener {
      */
     @Override
     public void notifyErrorListeners(final VerifyError verifyError) {
-        if (!this.verifyClientListeners.isEmpty())
+        if (!this.verifyClientListeners.isEmpty()) {
+            UserObject userObject = new UserObject(this.verifyRequest.getPhoneNumber());
             for (VerifyClientListener listener : this.verifyClientListeners)
-                listener.onError(this, verifyError);
+                listener.onError(this, verifyError, userObject);
+        }
     }
 
     /**
@@ -413,25 +455,26 @@ public class VerifyClient implements BaseClientListener {
      */
     @Override
     public void handleUserStateChanged(final UserStatus userStatus) {
+        UserObject userObject = new UserObject(this.verifyRequest.getPhoneNumber());
         if (!this.verifyClientListeners.isEmpty()) {
             if (userStatus == UserStatus.USER_VERIFIED)
                 for (VerifyClientListener listener : this.verifyClientListeners)
-                    listener.onUserVerified(this);
+                    listener.onUserVerified(this, userObject);
             else if (userStatus == UserStatus.USER_PENDING)
                 for (VerifyClientListener listener : this.verifyClientListeners)
-                    listener.onVerifyInProgress(this);
+                    listener.onVerifyInProgress(this, userObject);
             else if (userStatus == UserStatus.USER_BLACKLISTED)
                 for (VerifyClientListener listener : this.verifyClientListeners)
-                    listener.onError(this, VerifyError.USER_BLACKLISTED);
+                    listener.onError(this, VerifyError.USER_BLACKLISTED, userObject);
             else if(userStatus == UserStatus.USER_UNKNOWN)
                 for (VerifyClientListener listener : this.verifyClientListeners)
-                    listener.onError(this, VerifyError.USER_UNKNOWN);
+                    listener.onError(this, VerifyError.USER_UNKNOWN, userObject);
             else if (userStatus == UserStatus.USER_EXPIRED)
                 for (VerifyClientListener listener : this.verifyClientListeners)
-                    listener.onError(this, VerifyError.USER_EXPIRED);
+                    listener.onError(this, VerifyError.USER_EXPIRED, userObject);
             else if (userStatus == UserStatus.USER_FAILED)
                 for (VerifyClientListener listener : this.verifyClientListeners)
-                    listener.onError(this, VerifyError.USER_FAILED);
+                    listener.onError(this, VerifyError.USER_FAILED, userObject);
         }
     }
 
@@ -442,12 +485,28 @@ public class VerifyClient implements BaseClientListener {
                 listener.onException(exception);
     }
 
+    private void getVerifiedUser(final String countryCode,
+                                 final String phoneNumber,
+                                 final boolean isStandalone) {
+        warnIfMissingListener();
+
+        if (isVerifyMissingInput(countryCode, phoneNumber))
+            notifyErrorListeners(VerifyError.NUMBER_REQUIRED);
+        else {
+            updateVerifyRequest(countryCode, phoneNumber, isStandalone);
+            setupVerifyClientListeners();
+            VerifyService service = VerifyService.getInstance();
+            service.init(this.verifyRequest);
+            service.start(this.nexmoClient, this.verifyServiceListener);
+        }
+    }
+
     /**
      * Handle the GCM notifications broadcast receiver, enable it to automatically trigger the check request
      * for the ongoing verify.
      */
     private void setGcmBroadcastReceiver() {
-        gcmPayloadBroadcastReceiver = new BroadcastReceiver() {
+        this.gcmPayloadBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.hasExtra(VerifyGcmListenerService.MESSAGE_KEY_PIN)) {
@@ -459,7 +518,55 @@ public class VerifyClient implements BaseClientListener {
         };
 
         LocalBroadcastManager.getInstance(this.nexmoClient.getContext()).
-                registerReceiver(gcmPayloadBroadcastReceiver, new IntentFilter(VerifyGcmListenerService.ACTION_BROADCAST_PIN));
+                registerReceiver(this.gcmPayloadBroadcastReceiver, new IntentFilter(VerifyGcmListenerService.ACTION_BROADCAST_PIN));
+    }
+
+    /**
+     * Handle the managedUI notifications broadcast receiver, update {@link VerifyClient} on progress.
+     */
+    private void setManagedUIBroadcastReceiver() {
+        this.managedVerifyUIReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Bundle extras = intent.getExtras();
+                if (extras != null) {
+                    ManagedVerifyResponse response = extras.getParcelable(ManagedVerifyResponse.class.getSimpleName());
+                    if (response != null && !response.isIoExceptionOccured()) {
+                        updateVerifyRequest(response.getPhone());
+                        if (response.getUserStatus() == UserStatus.USER_PENDING) {
+                            handleUserStateChanged(UserStatus.USER_PENDING);
+                            commandsHandler.postDelayed(commandsRunnable, 30000);
+                        }
+                         else if (response.getUserStatus() == UserStatus.USER_VERIFIED)
+                            handleUserStateChanged(UserStatus.USER_VERIFIED);
+                        else if (response.getUserStatus() == UserStatus.USER_FAILED)
+                            handleUserStateChanged(UserStatus.USER_FAILED);
+                        else
+                            notifyErrorListeners(response.getVerifyError());
+                    } else
+                        handleNetworkException(new IOException("Network exception"));
+                }
+            }
+        };
+
+        LocalBroadcastManager.getInstance(this.nexmoClient.getContext()).
+                registerReceiver(this.managedVerifyUIReceiver, new IntentFilter(VerifyPhoneNumberActivity.ACTION_BROADCAST_MANAGED_EVENT));
+    }
+
+    private void broadcastCommandTimerDone() {
+        Intent intent = new Intent(ACTION_BROADCAST_COMMAND_TIMER);
+        intent.putExtra(MESSAGE_KEY_TIMER_STATE_DONE, true);
+        LocalBroadcastManager.getInstance(this.nexmoClient.getContext()).sendBroadcast(intent);
+    }
+
+    private void launchView(Class<VerifyPhoneNumberActivity> activityClass) {
+        Context appContext = this.nexmoClient.getContext();
+        Intent signInIntent = new Intent(appContext, activityClass);
+        Bundle nexmoClientBundle = new Bundle();
+        nexmoClientBundle.putParcelable(NexmoClient.class.getSimpleName(), this.nexmoClient);
+        signInIntent.putExtras(nexmoClientBundle);
+        signInIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        appContext.startActivity(signInIntent);
     }
 
     private void manageCheckPin(final String pinCode) {
@@ -498,9 +605,16 @@ public class VerifyClient implements BaseClientListener {
     }
 
     private void updateVerifyRequest(final String countryCode,
-                                     final String phoneNo) {
+                                     final String phoneNo,
+                                     final boolean isStandalone) {
         synchronized(this){
-            this.verifyRequest = new VerifyRequest(countryCode, phoneNo);
+            this.verifyRequest = new VerifyRequest(countryCode, phoneNo, isStandalone);
+        }
+    }
+
+    private void updateVerifyRequest(final String phoneNo) {
+        synchronized(this){
+            this.verifyRequest.setPhoneNumber(phoneNo);
         }
     }
 

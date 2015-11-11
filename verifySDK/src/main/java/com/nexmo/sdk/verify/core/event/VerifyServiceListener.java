@@ -50,6 +50,11 @@ public class VerifyServiceListener extends ServiceListener<VerifyResponse> {
                     getClientListener().notifyErrorListeners(VerifyError.INTERNAL_ERR);
                 break;
             }
+            case ResultCodes.INVALID_USER_STATUS_FOR_STATELESS_VERIFICATION_REQUEST: {
+                // todo see if the mapping is not by default.
+                getClientListener().notifyErrorListeners(VerifyError.INVALID_USER_STATUS_FOR_STATELESS_VERIFICATION);
+                break;
+            }
             case ResultCodes.INVALID_TOKEN: {
                 // Restart verify and request for a new token.
                 // If token continues to expire the service will send back a throttled error.

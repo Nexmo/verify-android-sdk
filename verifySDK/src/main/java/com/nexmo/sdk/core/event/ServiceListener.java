@@ -61,7 +61,10 @@ public abstract class ServiceListener<T> implements GenericExceptionListener {
             case ResultCodes.INVALID_USER_STATUS_FOR_LOGOUT:
                 return VerifyError.INVALID_USER_STATUS_FOR_COMMAND;
             case ResultCodes.COMMAND_NOT_SUPPORTED:
+            case ResultCodes.CANNOT_PROCESS_MESSAGE:
                 return VerifyError.COMMAND_NOT_SUPPORTED;
+            case ResultCodes.INVALID_USER_STATUS_FOR_STATELESS_VERIFICATION_REQUEST:
+                return VerifyError.INVALID_USER_STATUS_FOR_STATELESS_VERIFICATION;
             default:
                 return VerifyError.INTERNAL_ERR;
         }

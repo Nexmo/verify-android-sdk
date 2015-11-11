@@ -225,7 +225,10 @@ public class VerifyService extends BaseService<VerifyResponse>
 
             Client client = new Client();
             try {
-                HttpURLConnection connection = client.initConnection(new Request(nexmoClient.getEnvironmentHost(), nexmoClient.getSharedSecretKey(), BaseService.METHOD_VERIFY, requestParams));
+                HttpURLConnection connection = client.initConnection(new Request(nexmoClient.getEnvironmentHost(),
+                                                                                 nexmoClient.getSharedSecretKey(),
+                                                                                 verifyRequest.isStandalone() ? BaseService.METHOD_VERIFY_STANDALONE : BaseService.METHOD_VERIFY,
+                                                                                 requestParams));
                 Response response = client.execute(connection);
                 Log.d(TAG, "VERIFY raw response: " + response);
                 return response;
