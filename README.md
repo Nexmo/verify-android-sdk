@@ -2,23 +2,14 @@
 The Nexmo Verify SDK
 =======
 
-You use Nexmo Verify to check that a person has access to a specific phone number.
+With Verify SDK you add password replacement, 2-factor authentication, or user and transaction verification to your App with a single line of code.
+Verify SDK:
+•	Adds a new level of security to your App by tying phone numbers to unique device IDs.
+•	Provides user management support. You easily manage user identity across multiple devices and platforms without building a complex user management backend. No need to create and manage a user database, or query your database on each login request.
+•	Enables you to re-verify users with push notifications.
+•	Offers a UX framework to integrate in your App.
 
-To complete phone verification:
-
-1. Verify sends a PIN in an SMS and/or Text-to-speech (TTS) call to your user.
-   You can also enable Google Cloud Messaging (GCM) in order to send a PIN using push notifications.
-2. The user enters this PIN into your App or website.
-3. You use Verify to check that the PIN entered by your user is the one you sent.
-
-Using the Nexmo Verify SDK you easily integrate Verify functionality into your Android App. With the Nexmo Verify SDK, you enter the user's phone number and the SDK completes verification for you.
-
-In order to integrate the Nexmo Verify SDK in your App, see:
-
-* [The Verify SDK Sample App](https://github.com/Nexmo/verify-android-sdk/blob/master/VerifySample/The Verify SDK Sample App.md)
-* [The Verify SDK PUSH Enabled Sample App](https://github.com/Nexmo/verify-android-sdk/blob/master/VerifySample_PushEnabled/The Verify SDK PUSH Enabled Sample App.md)
-* [Integrating the Nexmo Verify SDK](https://github.com/Nexmo/verify-android-sdk/blob/master/Integrating the Nexmo Verify SDK.md)
-* [Advanced use of the Nexmo Verify SDK](https://github.com/Nexmo/verify-android-sdk/blob/master/Advanced use of the Nexmo Verify SDK.md)
+Learn how to use Verify SDK on [The official documentation page] (https://docs.nexmo.com/libraries/verify-sdk/verify-sdk-for-android)
 
 Feel free to checkout the [Verify SDK codebase] (https://github.com/Nexmo/verify-android-sdk/blob/master/verifySDK) if you wish to contribute to our open source library.
 
