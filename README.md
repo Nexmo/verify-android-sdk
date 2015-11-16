@@ -35,5 +35,5 @@ or any modifications or derivative works thereof, except in accordance with the 
 Author
 =======
 
-Emma Tresanszki, emma@nexmo.com
+Emma Tresanszki, support@nexmo.com
 
