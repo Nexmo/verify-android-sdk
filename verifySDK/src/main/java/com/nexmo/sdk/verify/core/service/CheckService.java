@@ -235,7 +235,7 @@ public class CheckService extends BaseService<CheckResponse>
             try {
                 HttpURLConnection connection = client.initConnection(new Request(nexmoClient.getEnvironmentHost(),
                                                                                 nexmoClient.getSharedSecretKey(),
-                                                                                verifyRequest.isStandalone() ? BaseService.METHOD_CHECK_STANDALONE : BaseService.METHOD_CHECK,
+                                                                                BaseService.METHOD_CHECK,
                                                                                 requestParams));
                 Response response = client.execute(connection);
                 Log.d(TAG, "CHECK raw response: " + response);

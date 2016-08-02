@@ -19,8 +19,8 @@ import com.nexmo.sdk.core.device.DeviceProperties;
 import com.nexmo.sdk.core.device.NoDeviceIdException;
 
 import org.junit.Test;
-import org.junit.internal.runners.statements.Fail;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -32,6 +32,18 @@ public class DevicePropertiesTest {
         try {
             DeviceProperties.getDeviceId(new MockContext());
            assertTrue(TAG + "getDeviceId did not throw any exception.", true);
+        } catch (NoDeviceIdException e) {
+            assertTrue(TAG + " getDeviceId failed with no context.", false);
+        }
+    }
+
+    @Test
+    public void testGetDeviceIdNotInvalid() {
+        try {
+            String id = DeviceProperties.getDeviceId(new MockContext());
+            assertNotEquals(TAG + " getDeviceId failed, SERIAL number was reset. ",
+                    "00000000000000",
+                    id);
         } catch (NoDeviceIdException e) {
             assertTrue(TAG + " getDeviceId failed with no context.", false);
         }

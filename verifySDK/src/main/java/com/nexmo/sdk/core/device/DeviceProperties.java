@@ -21,14 +21,14 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 
-import java.lang.reflect.Method;
+import com.nexmo.sdk.util.DeviceUtil;
+
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.Locale;
-import java.util.prefs.NodeChangeEvent;
 
 /**
  * Utility class for accessing device properties.
@@ -37,6 +37,7 @@ public class DeviceProperties {
 
     /** Log tag. */
     private static final String TAG = DeviceProperties.class.getSimpleName();
+    private static final String SERIAL_NO_RESET_TO_INVALID = "00000000000000";
 
     /**
      * Get the Android API version.
@@ -51,10 +52,10 @@ public class DeviceProperties {
      * Get the IP address of the current device.
      * @param context The context of the sender activity.
      *
-     * @return The IP address of the current device.
+     * @return The IP address of the current device, or null if 'android.permission.ACCESS_WIFI_STATE" is denied.
      */
     public static String getIPAddress(Context context) {
-        if (context != null) {
+        if (context != null && DeviceUtil.isAccessWifiStateGranted(context)) {
             // Use the Application context to prevent memory leaks when referencing activities that are being killed.
             Context appContext = context.getApplicationContext();
 
@@ -101,26 +102,27 @@ public class DeviceProperties {
 
     /**
      * Get a unique deviceId for the current handset, even for SIM-less devices.
-     * First attempt is to get the IMEI, but if telephony service is not available,
-     * the serial number or the ANDROID_ID are used.
+     *
+     * First attempt is to get a serial number, and if this cannot be retrieved
+     * we fallback to IMEI or ANDROID_ID.
      * @param context The context of the sender activity.
      *
      * @return The unique Id of the device.
      */
     public static String getDeviceId(Context context) throws NoDeviceIdException {
         if (context != null) {
-            String IMEI = getIMEI(context);
-            if (TextUtils.isEmpty(IMEI)) {
-                String serialNo = getSerialNumber();
-                if (TextUtils.isEmpty(serialNo)) {
-                    String android_ID =  getAndroid_ID(context);
-                    if (!TextUtils.isEmpty(android_ID))
-                        return android_ID;
+            String serialNo = getSerialNumber();
+            if(TextUtils.isEmpty(serialNo)) {
+                String android_ID = getAndroid_ID(context);
+                if(TextUtils.isEmpty(android_ID)) {
+                    String IMEI = getIMEI(context);
+                    if(!TextUtils.isEmpty(IMEI))
+                        return IMEI;
                     throw new NoDeviceIdException(TAG + " Device ID is not available.");
                 }
-                return serialNo;
+                return android_ID;
             }
-            return IMEI;
+            return serialNo;
         }
         return null;
     }
@@ -130,39 +132,39 @@ public class DeviceProperties {
      * For example, the IMEI for GSM and the MEID or ESN for CDMA phones.
      * @param context The context of the sender activity.
      *
-     * @return The unique IMEI of the device, or null if the context is not supplied or device id is not available.
+     * @return The unique IMEI of the device,
+     *         or null if the context is not supplied, device id is not available due to DENIED permission.
      */
     private static String getIMEI(Context context) {
-        if (context != null) {
+        if (context != null && DeviceUtil.isAccessWifiStateGranted(context)) {
             // Use the Application context to prevent memory leaks when referencing activities that are being killed.
             Context appContext = context.getApplicationContext();
             TelephonyManager manager  = (TelephonyManager) appContext.getSystemService(Context.TELEPHONY_SERVICE);
             return manager.getDeviceId();
         }
+        //if not telephony return null and use serial.
         return null;
     }
 
     /**
-     * Get the unique serial number for the current device.
+     * Get the unique hardware serial number for any telephony device with API level >=9, no permission is required.
+     *
      * Serial number can be identified for the devices such as MIDs (Mobile Internet Devices)
      * or PMPs (Portable Media Players) which are not having telephony services.
      *
-     * @return The serial number of the device, or null if it is not available.
+     * Note: Known bug during some Android upgrades, it can be reset to trailing zeros:
+     * https://code.google.com/p/android/issues/detail?id=35193
+     *
+     * @return The serial number of the device(Alphanumeric only, case-insensitive),
+     *         or null if it is not available.
      */
     private static String getSerialNumber() {
-        try {
-            Class<?> SystemProperties = Class.forName("android.os.SystemProperties");
-            Method get = SystemProperties.getMethod("get", String.class, String.class);
-            return (String) get.invoke(SystemProperties, "ro.serialno", null);
-        } catch (Exception e) {
-            Log.d(TAG, "Serial number is not available. " + e.getMessage());
-        }
-        return null;
+        return (!Build.SERIAL.equals(SERIAL_NO_RESET_TO_INVALID) ? Build.SERIAL : null);
     }
 
     /**
-     * A randomly generated 64-bit number on the device's first boot that remains constant
-     * for the lifetime of the device.
+     * A randomly generated 64-bit number on the device's first boot that does not
+     * survive factory resets.
      *
      * @return The device ANDROID_ID, or null if the context is not supplied.
      */

@@ -143,10 +143,8 @@ public class VerifyPhoneNumberActivity extends VerifyBaseActivity implements Bas
             }
             case USER_FAILED: {
                 broadcastManagedVerifyUpdate(new ManagedVerifyResponse(getPhoneNumberInput(), UserStatus.USER_FAILED, null, false));
-
                 displayToast(getResources().getString(R.string.nexmo_verify_dialog_message_failed));
                 finish();
-
             }
             default:
             {

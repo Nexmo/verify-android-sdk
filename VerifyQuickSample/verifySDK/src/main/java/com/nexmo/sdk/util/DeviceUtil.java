@@ -17,13 +17,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.nexmo.sdk.BuildConfig;
+import com.nexmo.sdk.R;
 
 /**
 * Utility class for getting the handset properties.
@@ -70,12 +73,14 @@ public class DeviceUtil {
 
     /**
      * Returns the phone number for the SIM line 1.
+     * Requires android.permission.READ_PHONE_STATE
+     *
      * @param context The context of the sender activity.
      *
-     * @return The phone number, or  {@code null} if it is unavailable.
+     * @return The phone number, or  {@code null} if it is unavailable, or permission is DENIED.
      */
     public static String getPhoneNumber(Context context) {
-        if (context != null) {
+        if (context != null && isReadPhoneStateGranted(context)) {
             Context appContext = context.getApplicationContext();
             TelephonyManager manager = (TelephonyManager) appContext.getSystemService(Context.TELEPHONY_SERVICE);
             return manager.getLine1Number();
@@ -91,7 +96,7 @@ public class DeviceUtil {
      *         False if the handset has no SIM or it is WifiOnly.
      */
     public static boolean isSIMAvailable(Context context) {
-        if (context != null) {
+        if (context != null && isReadPhoneStateGranted(context)) {
             Context appContext = context.getApplicationContext();
             TelephonyManager manager  = (TelephonyManager) appContext.getSystemService(Context.TELEPHONY_SERVICE);
             return (TelephonyManager.SIM_STATE_READY == manager.getSimState() &&
@@ -101,6 +106,16 @@ public class DeviceUtil {
         return false;
     }
 
+    public static boolean isReadPhoneStateGranted(Context context) {
+        return (ContextCompat.checkSelfPermission(context, "android.permission.READ_PHONE_STATE")
+                == PackageManager.PERMISSION_GRANTED);
+    }
+
+    public static boolean isAccessWifiStateGranted(Context context) {
+        return (ContextCompat.checkSelfPermission(context, "android.permission.ACCESS_WIFI_STATE")
+                == PackageManager.PERMISSION_GRANTED);
+    }
+
     /**
      * Check if there are 2 SIM cards available on the handset.
      * @param context The context of the sender activity.
@@ -108,7 +123,7 @@ public class DeviceUtil {
      * @return True if the handset if dualSim, false otherwise.
      */
     public static boolean isPhoneDualSIM(Context context) {
-        if (context != null) {
+        if (isReadPhoneStateGranted(context) && isReadPhoneStateGranted(context)) {
             Context appContext = context.getApplicationContext();
             TelephonyManager telephonyManager = ((TelephonyManager) appContext.getSystemService(Context.TELEPHONY_SERVICE));
 
@@ -129,7 +144,8 @@ public class DeviceUtil {
                 if (BuildConfig.DEBUG)
                     Log.i(TAG, "isPhoneDualSIM: not available");
             }
-        }
+        } else
+            Log.d(TAG, context.getResources().getString(R.string.nexmo_sdk_permission_denied) + "READ_PHONE_STATE");
         return false;
     }
 
@@ -144,10 +160,14 @@ public class DeviceUtil {
      */
     public static boolean isNetworkAvailable(Context context) {
         if (context != null) {
-            ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connManager.getActiveNetworkInfo();
-            return (networkInfo != null && networkInfo.isConnected());
+            if(ContextCompat.checkSelfPermission(context, "android.permission.ACCESS_NETWORK_STATE") == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context, "android.permission.INTERNET") == PackageManager.PERMISSION_GRANTED) {
+                ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = connManager.getActiveNetworkInfo();
+                return (networkInfo != null && networkInfo.isConnected());
+            } else
+                Log.d(TAG, context.getResources().getString(R.string.nexmo_sdk_permission_denied) + "ACCESS_NETWORK_STATE");
         }
+
         return false;
     }
 

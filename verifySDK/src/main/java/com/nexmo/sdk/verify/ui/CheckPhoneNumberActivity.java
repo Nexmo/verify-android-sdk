@@ -169,7 +169,6 @@ public class CheckPhoneNumberActivity extends VerifyBaseActivity implements Base
             }
             case ResultCodes.INVALID_CODE_TOO_MANY_TIMES:
             case ResultCodes.CANNOT_PERFORM_CHECK: {
-                codeEditText.setError(getResources().getString(R.string.nexmo_check_pin_user_failed));
                 setResult(FAILED_RESULT_CODE, new Intent());
                 finish();
                 break;
