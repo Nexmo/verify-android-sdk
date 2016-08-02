@@ -48,7 +48,6 @@ public abstract class BaseService<T extends BaseResponse> extends Service {
     public static final String METHOD_VERIFY = "verify/json?";
     public static final String METHOD_VERIFY_STANDALONE = "verify/oneshot/json?";
     public static final String METHOD_CHECK = "verify/check/json?";
-    public static final String METHOD_CHECK_STANDALONE = "verify/oneshot/check/json?";
     public static final String METHOD_SEARCH = "verify/search/json?";
     public static final String METHOD_LOGOUT = "verify/logout/json?";
     public static final String METHOD_COMMAND = "verify/control/json?";

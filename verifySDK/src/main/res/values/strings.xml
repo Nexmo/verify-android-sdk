@@ -27,4 +27,9 @@
     <string name="nexmo_verify_dialog_message_canceled">Verification canceled.</string>
     <string name="nexmo_verify_dialog_message_cancel_failed">Cancellation cannot be performed anymore.</string>
     <string name="nexmo_verify_cancel">CANCEL</string>
+
+    <!-- permission strings -->
+    <string name="nexmo_permlab_readPhoneState">read phone status and identity</string>
+    <string name="nexmo_permdesc_readPhoneState">Allows the app to access the phone features of the device. This permission allows the app to determine the device\'s number and device IDs for performing phone number verification."</string>
+    <string name="nexmo_sdk_permission_denied">Permission not granted</string>
 </resources>
