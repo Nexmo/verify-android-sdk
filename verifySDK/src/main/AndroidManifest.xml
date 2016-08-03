@@ -2,20 +2,6 @@
 <manifest package="com.nexmo.sdk"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <permission android:name="android.permission.READ_PHONE_STATE"
-                android:permissionGroup="android.permission-group.PHONE"
-                android:label="@string/nexmo_permlab_readPhoneState"
-                android:description="@string/nexmo_permdesc_readPhoneState"
-                android:protectionLevel="normal" />
-
-    <!-- Automatically granted permissions PROTECTION_NORMAL -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-
-    <!-- Permission has to be GRANTED -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-
     <application>
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
