@@ -1,3 +1,35 @@
+Verify 2.0.0
+========
+4 August 2016
+
+Integration changes: permissions have to be added in the host app rather than the SDK itself.
+Verify SDK requires special permissions in order to access the device's id, internet and network connection.
+For integrating Verify SDK you have to edit your application's Manifest and add the items listed below:
+  ```java
+    <!-- Automatically granted permissions PROTECTION_NORMAL -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Permission has to be GRANTED -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+```
+
+ The SDK handles runtime permissions, so applications running Marshmallow will failover gracefully if the end user denies permissions.
+
+Verify 1.2.0
+========
+3 August 2016
+
+Added support for Marshmallow: runtime permission checks.
+
+
+Stable release: Verify 1.1.0
+========
+25 July 2016
+
+Fixes:
+Upgraded build tools.
+Newer versions of play services will not cause conflict anymore.
 
 VerifyBeta
 ========
@@ -99,3 +131,12 @@ Verify Beta 0.6
 
 - Published verify:1.0.0-SNAPSHOT to maven central.
 - Updated the samples to point to the external dependency, and moved away from using internal aar in flatDir.
+
+
+Verify 1.0
+========
+11 November 2015
+
+- Published verify:1.0.1-SNAPSHOT
+- Created a new sample VerifyQuickSample that demonstrates the new VerifyClient.getgetVerifiedUserFromDefaultManagedUI() feature.
+- Added standalone vertifications via VerifyClient.verifyStandalone
