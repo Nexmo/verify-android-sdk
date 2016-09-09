@@ -1,3 +1,15 @@
+Verify 3.0.0
+========
+9 September 2016
+
+Fixes:
+Deleted getPhoneNumber() from DeviceUtil
+Deleted isSimAvailable() from DeviceUtil
+Deleted isNumberMatchingSimCard() from DeviceUtil
+Deleted prefillInput()  method from VerifyPhoneNumberActivity
+Deleted depreciated method getVerifiedUser() in VerifyClient
+
+```
 Verify 2.0.0
 ========
 4 August 2016
@@ -5,16 +17,16 @@ Verify 2.0.0
 Integration changes: permissions have to be added in the host app rather than the SDK itself.
 Verify SDK requires special permissions in order to access the device's id, internet and network connection.
 For integrating Verify SDK you have to edit your application's Manifest and add the items listed below:
-  ```java
-    <!-- Automatically granted permissions PROTECTION_NORMAL -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <!-- Permission has to be GRANTED -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+java
+<!-- Automatically granted permissions PROTECTION_NORMAL -->
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+<uses-permission android:name="android.permission.INTERNET"/>
+<!-- Permission has to be GRANTED -->
+<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 ```
 
- The SDK handles runtime permissions, so applications running Marshmallow will failover gracefully if the end user denies permissions.
+The SDK handles runtime permissions, so applications running Marshmallow will failover gracefully if the end user denies permissions.
 
 Verify 1.2.0
 ========
@@ -43,41 +55,41 @@ VerifyBeta 0.2
 6 July 2015
 
 - getUserStatus is added to retrieve real-time user status. It enables you to get the user status even if a verification is still in progress.
-  Usage:
+Usage:
 ```java
-	myVerifyClient.isUserVerified(myCountryCode, myPhoneNo, new SearchListener() {
-		@Override
-		public void onUserStatus(final UserStatus userStatus) {
-		    // Update the application UI here if needed.
-		}
-		@Override
-		public void onError(final com.nexmo.sdk.verify.event.VerifyError errorCode, final String errorMessage) {
-		    // Update the application UI here if needed.
-		}
-		@Override
-		public void onException(IOException exception) {
-		    // Update the application UI here if needed. Most probably there is a network connectivity exception.
-		}
-         }
+myVerifyClient.isUserVerified(myCountryCode, myPhoneNo, new SearchListener() {
+@Override
+public void onUserStatus(final UserStatus userStatus) {
+// Update the application UI here if needed.
+}
+@Override
+public void onError(final com.nexmo.sdk.verify.event.VerifyError errorCode, final String errorMessage) {
+// Update the application UI here if needed.
+}
+@Override
+public void onException(IOException exception) {
+// Update the application UI here if needed. Most probably there is a network connectivity exception.
+}
+}
 ```
 
 - commands are implemented: CANCEL/LOGOUT/TRIGGER_NEXT_EVENT
-  Usage:
+Usage:
 ```java
-	myVerifyClient.command(myCountryCode, myPhoneNo, Command.LOGOUT, new CommandListener() {
-		@Override
-		public void onSuccess(Command command) {
-		    // Update the application UI here if needed.
-		}
-		@Override
-		public void onError(final com.nexmo.sdk.verify.event.VerifyError errorCode, final String errorMessage) {
-		    // Update the application UI here if needed.
-		}
-		@Override
-		public void onException(IOException exception) {
-		    // Update the application UI here if needed. Most probably there is a network connectivity exception.
-		}
-        }
+myVerifyClient.command(myCountryCode, myPhoneNo, Command.LOGOUT, new CommandListener() {
+@Override
+public void onSuccess(Command command) {
+// Update the application UI here if needed.
+}
+@Override
+public void onError(final com.nexmo.sdk.verify.event.VerifyError errorCode, final String errorMessage) {
+// Update the application UI here if needed.
+}
+@Override
+public void onException(IOException exception) {
+// Update the application UI here if needed. Most probably there is a network connectivity exception.
+}
+}
 ```
 
 - Sample application provided: VerifySample is available.
@@ -96,10 +108,10 @@ Verify Beta 0.3
 19 August 2015
 
 - added push notification integration for pin codes via GCM. The GCM registration token is set via the NexmoClient builder and a separate setter.
-  The SDK does a silent check for the push, parses the notifications and automatically triggers a check request with the received pin code.
-  Usage:
+The SDK does a silent check for the push, parses the notifications and automatically triggers a check request with the received pin code.
+Usage:
 ```java
-	nexmoClient.setGcmRegistrationToken("YourGcmRegistrationToken");
+nexmoClient.setGcmRegistrationToken("YourGcmRegistrationToken");
 ```
 
 - updated error codes.

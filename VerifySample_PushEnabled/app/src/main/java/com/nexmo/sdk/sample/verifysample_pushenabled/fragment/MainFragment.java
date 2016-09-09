@@ -39,7 +39,6 @@ import com.nexmo.sdk.sample.verifysample_pushenabled.SampleApplication;
 import com.nexmo.sdk.sample.verifysample_pushenabled.adapter.CountriesAdapter;
 import com.nexmo.sdk.sample.verifysample_pushenabled.adapter.CountryList;
 
-import com.nexmo.sdk.util.DeviceUtil;
 import com.nexmo.sdk.verify.client.VerifyClient;
 import com.nexmo.sdk.verify.event.*;
 import com.nexmo.sdk.verify.event.VerifyError;
@@ -141,7 +140,6 @@ public class MainFragment extends Fragment {
         countrySpinner.setSelection(this.countries.getCountryCodePosition());
 
         final EditText phoneNumber_et = (EditText) activity.findViewById(R.id.number_et);
-        phoneNumber_et.setText(DeviceUtil.getPhoneNumber(activity));
         phoneNumber_et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {

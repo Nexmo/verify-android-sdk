@@ -29,9 +29,9 @@ import com.nexmo.sdk.BuildConfig;
 import com.nexmo.sdk.R;
 
 /**
-* Utility class for getting the handset properties.
-* Used to check whether the handset uses a SIM card, or it is WiiFi only.
-*/
+ * Utility class for getting the handset properties.
+ * Used to check whether the handset uses a SIM card, or it is WiiFi only.
+ */
 public class DeviceUtil {
 
     /** Log tag. */
@@ -52,58 +52,6 @@ public class DeviceUtil {
                 return simCountryCode.toUpperCase();
         }
         return null;
-    }
-
-    /**
-     * Check if the provided SIM details match the internal SIM card.
-     * @param context The context of the sender activity.
-     * @param countryCode The supplied country code.
-     * @param phoneNumber The supplied phone number.
-     *
-     * @return True if the supplied SIM details match the SIM card, False otherwise.
-     */
-    public static boolean isNumberMatchingSIMCard(Context context, final String countryCode, final String phoneNumber) {
-        if (context != null) {
-            String simPhoneNumber = DeviceUtil.getPhoneNumber(context);
-            String simCountryCode = DeviceUtil.getCountryCode(context);
-            return !(!TextUtils.isEmpty(simPhoneNumber) && !TextUtils.isEmpty(simCountryCode)) || (simPhoneNumber.equals(phoneNumber) && simCountryCode.equals(countryCode));
-        } else
-            return false;
-    }
-
-    /**
-     * Returns the phone number for the SIM line 1.
-     * Requires android.permission.READ_PHONE_STATE
-     *
-     * @param context The context of the sender activity.
-     *
-     * @return The phone number, or  {@code null} if it is unavailable, or permission is DENIED.
-     */
-    public static String getPhoneNumber(Context context) {
-        if (context != null && isReadPhoneStateGranted(context)) {
-            Context appContext = context.getApplicationContext();
-            TelephonyManager manager = (TelephonyManager) appContext.getSystemService(Context.TELEPHONY_SERVICE);
-            return manager.getLine1Number();
-        }
-        return null;
-    }
-
-    /**
-     * Checks if the current handset uses a SIM card.
-     * @param context The context of the sender activity.
-     *
-     * @return True if the handset uses a SIM card,
-     *         False if the handset has no SIM or it is WifiOnly.
-     */
-    public static boolean isSIMAvailable(Context context) {
-        if (context != null && isReadPhoneStateGranted(context)) {
-            Context appContext = context.getApplicationContext();
-            TelephonyManager manager  = (TelephonyManager) appContext.getSystemService(Context.TELEPHONY_SERVICE);
-            return (TelephonyManager.SIM_STATE_READY == manager.getSimState() &&
-                    !TextUtils.isEmpty(manager.getLine1Number()) &&
-                    !TextUtils.isEmpty(manager.getSimCountryIso()));
-        }
-        return false;
     }
 
     public static boolean isReadPhoneStateGranted(Context context) {
