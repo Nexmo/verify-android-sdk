@@ -30,7 +30,6 @@ import com.nexmo.sdk.R;
 import com.nexmo.sdk.core.client.ClientBuilderException;
 import com.nexmo.sdk.core.client.ResultCodes;
 import com.nexmo.sdk.core.config.Defaults;
-import com.nexmo.sdk.util.DeviceUtil;
 import com.nexmo.sdk.verify.core.event.BaseClientListener;
 import com.nexmo.sdk.verify.core.event.VerifyServiceListener;
 import com.nexmo.sdk.verify.core.request.VerifyRequest;
@@ -73,7 +72,6 @@ public class VerifyPhoneNumberActivity extends VerifyBaseActivity implements Bas
                     return;
                 }
                 setup();
-                prefillInput();
             }
         }
     }
@@ -219,15 +217,6 @@ public class VerifyPhoneNumberActivity extends VerifyBaseActivity implements Bas
                     break;
             }
         }
-    }
-
-    /**
-     * Pre-fill country code and phone number when possible.
-     * Individual app permissions are taken into consideration.
-     */
-    private void prefillInput() {
-        this.countryCodeSpinner.setSelection(this.countries.getCountryCodePosition());
-        this.phoneNumberEditText.setText(DeviceUtil.getPhoneNumber(this));
     }
 
     private void triggerVerify() {

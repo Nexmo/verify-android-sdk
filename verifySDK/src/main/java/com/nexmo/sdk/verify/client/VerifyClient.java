@@ -207,30 +207,6 @@ public class VerifyClient implements BaseClientListener {
     }
 
     /**
-     * @deprecated Use {@link VerifyClient#getVerifiedUser(String, String)} method instead and supply the user's phone number and country code.
-     *
-     * Verify the user of the current handset, with the handset SIM details.
-     * <p> Verification with no supplied phone number along with country code is not permitted for SIM less handsets.
-     * <p>  In this case, the end user does not need to enter their own phone number, as they will be automatically read from the SIM card.
-     *
-     * <p> Note: This method will only succeed if the current handset does contain a SIM card.
-     * Otherwise, please call {@link VerifyClient#getVerifiedUser(String, String)} with values provided by the user.
-     */
-    public void getVerifiedUser() {
-        Context appContext = this.nexmoClient.getContext();
-
-        if (DeviceUtil.isSIMAvailable(appContext))
-            getVerifiedUser(DeviceUtil.getCountryCode(appContext), DeviceUtil.getPhoneNumber(appContext));
-        else {
-            warnIfMissingListener();
-            if (BuildConfig.DEBUG)
-                Log.d(TAG, "SIM card cannot be read. Please use the VerifyClient.getVerifiedUser method and supply params " +
-                        "for phone number and country code for the verification to be initiated.");
-            notifyErrorListeners(VerifyError.NUMBER_REQUIRED);
-        }
-    }
-
-    /**
      * Verify the user of the current handset, with the provided country code and phone number.
      * Retrieve a verified user object for the current handset.
      * Use this method instead of {@link VerifyClient#getVerifiedUserFromDefaultManagedUI()} when you want to handle
