@@ -29,9 +29,9 @@ import com.nexmo.sdk.BuildConfig;
 import com.nexmo.sdk.R;
 
 /**
-* Utility class for getting the handset properties.
-* Used to check whether the handset uses a SIM card, or it is WiiFi only.
-*/
+ * Utility class for getting the handset properties.
+ * Used to check whether the handset uses a SIM card, or it is WiiFi only.
+ */
 public class DeviceUtil {
 
     /** Log tag. */

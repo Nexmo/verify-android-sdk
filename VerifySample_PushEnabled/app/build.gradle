@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
 
     repositories {
         mavenCentral()
@@ -24,6 +24,7 @@ android {
 }
 
 dependencies {
+
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.nexmo:verify:3.0.0'
     compile 'com.google.code.gson:gson:2.3.1'
