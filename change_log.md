@@ -9,7 +9,7 @@ Deleted isNumberMatchingSimCard() from DeviceUtil
 Deleted prefillInput()  method from VerifyPhoneNumberActivity
 Deleted depreciated method getVerifiedUser() in VerifyClient
 
-```
+
 Verify 2.0.0
 ========
 4 August 2016
