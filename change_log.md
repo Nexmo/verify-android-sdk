@@ -1,3 +1,10 @@
+Verify 4.0.0
+========
+22 November 2016
+
+- Deprecated GCM NexmoClient.setGcmRegistrationToken
+- Firebase Cloud Messaging (FCM) support NexmoClient.setPushRegistrationToken
+
 Verify 3.0.0
 ========
 9 September 2016
@@ -24,7 +31,7 @@ java
 <uses-permission android:name="android.permission.INTERNET"/>
 <!-- Permission has to be GRANTED -->
 <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-```
+
 
 The SDK handles runtime permissions, so applications running Marshmallow will failover gracefully if the end user denies permissions.
 
