@@ -71,16 +71,19 @@ public class NexmoClient implements Parcelable {
     private final String sharedSecretKey;
     private String environmentHost;
     private String GcmRegistrationToken;
+    public String pushRegistrationToken;
 
-    private NexmoClient(final Context context, final String appId, final String secretKey, final String environmentHost, final String GcmRegistrationToken) {
+    private NexmoClient(final Context context, final String appId, final String secretKey,
+                        final String environmentHost, final String pushRegistrationToken) {
         this.context = context;
         this.appId = appId;
         this.sharedSecretKey = secretKey;
         this.environmentHost = environmentHost;
-        this.GcmRegistrationToken = GcmRegistrationToken;
+        this.pushRegistrationToken = pushRegistrationToken;
     }
 
-    private NexmoClient(final Context context, final String appId, final String secretKey, final ENVIRONMENT_HOST environmentHost, final String GcmRegistrationToken) {
+    private NexmoClient(final Context context, final String appId, final String secretKey,
+                        final ENVIRONMENT_HOST environmentHost, final String GcmRegistrationToken) {
         this(context, appId, secretKey, (environmentHost == ENVIRONMENT_HOST.PRODUCTION ? Config.ENDPOINT_PRODUCTION : null), GcmRegistrationToken);
     }
 
@@ -100,13 +103,23 @@ public class NexmoClient implements Parcelable {
         }
     };
 
+    @Deprecated
     /**
+     * GCM support has been removed, Push notifications are now supported via Firebase.
+     * Use {@link #setPushRegistrationToken(String)} instead.
+     *
      * Reset the GCM registration token whenever there is a new one available.
      * @param gcmRegistrationToken The GCM registration ID that uniquely identifies an app/device pairing for push purposes.
      */
     public void setGcmRegistrationToken(final String gcmRegistrationToken) {
         synchronized(this) {
             this.GcmRegistrationToken = gcmRegistrationToken;
+        }
+    }
+
+    public void setPushRegistrationToken(final String pushRegistrationToken) {
+        synchronized (this) {
+            this.pushRegistrationToken = pushRegistrationToken;
         }
     }
 
@@ -142,13 +155,28 @@ public class NexmoClient implements Parcelable {
         return this.environmentHost;
     }
 
+    @Deprecated
     /**
+     * GCM support has been removed, Push notifications are now supported via Firebase.
+     * Use {@link #getPushRegistrationToken()}  instead.
+     *
      * Returns the provided GCM registration token value for this project.
-     * This value should be set prior to any verification start......
+     * This value should be set prior to any verification start.
+     *
      * @return  The GCM registration ID that uniquely identifies an app/device pairing for push purposes.
      */
     public String getGcmRegistrationToken() {
         return this.GcmRegistrationToken;
+    }
+
+    /**
+     * Returns the provided Firebase registration token for this project.
+     * This value should be set prior to any verification start.
+     *
+     * @return The push registration ID that uniquely identifies an app/device pairing for push purpose.
+     */
+    public String getPushRegistrationToken() {
+        return this.pushRegistrationToken;
     }
 
     /**
@@ -197,6 +225,7 @@ public class NexmoClient implements Parcelable {
         private String sharedSecretKey;
         private String environmentHost = Config.ENDPOINT_PRODUCTION;
         private String GcmRegistrationToken;
+        private String pushRegistrationToken;
 
         /**
          * Acquire a NexmoClient, based on the following mandatory parameters:
@@ -226,7 +255,11 @@ public class NexmoClient implements Parcelable {
             if(!TextUtils.isEmpty(missingParameters))
                 throw new ClientBuilderException("Building a NexmoClient instance has failed due to missing parameters: " + missingParameters);
             else
-                return new NexmoClient(this.context, this.appId, this.sharedSecretKey, this.environmentHost, this.GcmRegistrationToken);
+                return new NexmoClient(this.context,
+                        this.appId,
+                        this.sharedSecretKey,
+                        this.environmentHost,
+                        this.pushRegistrationToken);
         }
 
         public NexmoClientBuilder context(final Context context) {
@@ -254,8 +287,14 @@ public class NexmoClient implements Parcelable {
             return this;
         }
 
+        @Deprecated
         public NexmoClientBuilder gcmRegistrationToken(final String GcmRegistrationToken) {
             this.GcmRegistrationToken = GcmRegistrationToken;
+            return this;
+        }
+
+        public NexmoClientBuilder pushRegistrationToken(final String pushRegistrationToken) {
+            this.pushRegistrationToken = pushRegistrationToken;
             return this;
         }
     }
@@ -264,7 +303,7 @@ public class NexmoClient implements Parcelable {
         this.appId = input.readString();
         this.sharedSecretKey = input.readString();
         this.environmentHost = input.readString();
-        this.GcmRegistrationToken = input.readString();
+        this.pushRegistrationToken = input.readString();
     }
 
     @Override
@@ -272,7 +311,7 @@ public class NexmoClient implements Parcelable {
         out.writeString(this.appId);
         out.writeString(this.sharedSecretKey);
         out.writeString(this.environmentHost);
-        out.writeString(this.GcmRegistrationToken);
+        out.writeString(this.pushRegistrationToken);
     }
 
 }

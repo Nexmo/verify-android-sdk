@@ -27,7 +27,8 @@ import android.util.Log;
 import com.nexmo.sdk.NexmoClient;
 import com.nexmo.sdk.core.client.ResultCodes;
 import com.nexmo.sdk.core.config.Defaults;
-import com.nexmo.sdk.core.gcm.VerifyGcmListenerService;
+//import com.nexmo.sdk.core.gcm.VerifyGcmListenerService;
+import com.nexmo.sdk.core.push.NexmoFirebaseMessagingService;
 import com.nexmo.sdk.util.DeviceUtil;
 import com.nexmo.sdk.verify.core.event.BaseClientListener;
 import com.nexmo.sdk.verify.core.event.CheckServiceListener;
@@ -159,7 +160,7 @@ public class VerifyClient implements BaseClientListener {
     private VerifyServiceListener verifyServiceListener;
     private CheckServiceListener checkServiceListener;
     private SearchServiceListener searchServiceListener;
-    private BroadcastReceiver gcmPayloadBroadcastReceiver;
+    private BroadcastReceiver pushPayloadBroadcastReceiver;
     private BroadcastReceiver managedVerifyUIReceiver;
 
     /**
@@ -170,7 +171,7 @@ public class VerifyClient implements BaseClientListener {
     public VerifyClient(final NexmoClient nexmoClient) {
         this.verifyClientListeners = new HashSet<>();
         this.nexmoClient = nexmoClient;
-        setGcmBroadcastReceiver();
+        setPushBroadcastReceiver();
     }
 
     /**
@@ -481,20 +482,20 @@ public class VerifyClient implements BaseClientListener {
      * Handle the GCM notifications broadcast receiver, enable it to automatically trigger the check request
      * for the ongoing verify.
      */
-    private void setGcmBroadcastReceiver() {
-        this.gcmPayloadBroadcastReceiver = new BroadcastReceiver() {
+    private void setPushBroadcastReceiver() {
+        this.pushPayloadBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.hasExtra(VerifyGcmListenerService.MESSAGE_KEY_PIN)) {
-                    String pinCode = intent.getExtras().getString(VerifyGcmListenerService.MESSAGE_KEY_PIN);
-                    Log.d(TAG, "gcmPayloadBroadcastReceiver Pin: " + pinCode);
+                if (intent.hasExtra(NexmoFirebaseMessagingService.MESSAGE_KEY_PIN)) {
+                    String pinCode = intent.getExtras().getString(NexmoFirebaseMessagingService.MESSAGE_KEY_PIN);
+                    Log.d(TAG, "pushPayloadBroadcastReceiver Pin: " + pinCode);
                     manageCheckPin(pinCode);
                 }
             }
         };
 
         LocalBroadcastManager.getInstance(this.nexmoClient.getContext()).
-                registerReceiver(this.gcmPayloadBroadcastReceiver, new IntentFilter(VerifyGcmListenerService.ACTION_BROADCAST_PIN));
+                registerReceiver(this.pushPayloadBroadcastReceiver, new IntentFilter(NexmoFirebaseMessagingService.ACTION_BROADCAST_PIN));
     }
 
     /**
@@ -506,7 +507,8 @@ public class VerifyClient implements BaseClientListener {
             public void onReceive(Context context, Intent intent) {
                 Bundle extras = intent.getExtras();
                 if (extras != null) {
-                    ManagedVerifyResponse response = extras.getParcelable(ManagedVerifyResponse.class.getSimpleName());
+                    ManagedVerifyResponse response = extras.getParcelable(
+                            ManagedVerifyResponse.class.getSimpleName());
                     if (response != null && !response.isIoExceptionOccured()) {
                         updateVerifyRequest(response.getPhone());
                         if (response.getUserStatus() == UserStatus.USER_PENDING) {
@@ -525,8 +527,9 @@ public class VerifyClient implements BaseClientListener {
             }
         };
 
-        LocalBroadcastManager.getInstance(this.nexmoClient.getContext()).
-                registerReceiver(this.managedVerifyUIReceiver, new IntentFilter(VerifyPhoneNumberActivity.ACTION_BROADCAST_MANAGED_EVENT));
+        LocalBroadcastManager.getInstance(this.nexmoClient.getContext()).registerReceiver(
+                this.managedVerifyUIReceiver,
+                new IntentFilter(VerifyPhoneNumberActivity.ACTION_BROADCAST_MANAGED_EVENT));
     }
 
     private void broadcastCommandTimerDone() {
@@ -549,7 +552,7 @@ public class VerifyClient implements BaseClientListener {
         if (TextUtils.isEmpty(pinCode) || pinCode.length() < Defaults.MIN_CODE_LENGTH) {
             // Any empty pin will not be stored, neither sent to the service.
             if(BuildConfig.DEBUG)
-                Log.d(TAG, "Supplied phone number has an invalid length. Verify cannot be initiated.");
+                Log.d(TAG, "Supplied PIN code has an invalid length. Check cannot be performed.");
             notifyErrorListeners(VerifyError.INVALID_PIN_CODE);
         }
         else if (!this.verifyRequest.isPinCheckAvailable()) {

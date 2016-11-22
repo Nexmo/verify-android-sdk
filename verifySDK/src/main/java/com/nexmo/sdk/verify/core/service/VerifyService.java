@@ -209,16 +209,21 @@ public class VerifyService extends BaseService<VerifyResponse>
          */
         private Response startVerifyRequest(final VerifyRequest verifyRequest) throws IOException {
             Context appContext = nexmoClient.getContext();
-            String push_token = nexmoClient.getGcmRegistrationToken();
+            String push_token = nexmoClient.getPushRegistrationToken();
             Map<String, String> requestParams = new TreeMap<>();
             requestParams.put(TokenService.PARAM_TOKEN, verifyRequest.getToken());
             requestParams.put(BaseService.PARAM_NUMBER, verifyRequest.getPhoneNumber());
             requestParams.put(BaseService.PARAM_COUNTRY_CODE, verifyRequest.getCountryCode());
             requestParams.put(BaseService.PARAM_APP_ID, nexmoClient.getApplicationId());
+            Log.d(TAG, "device id " + DeviceProperties.getDeviceId(appContext));
             requestParams.put(BaseService.PARAM_DEVICE_ID, DeviceProperties.getDeviceId(appContext));
             requestParams.put(BaseService.PARAM_SOURCE_IP, DeviceProperties.getIPAddress(appContext));
-            if (!TextUtils.isEmpty(push_token))
-                requestParams.put(BaseService.PARAM_GCM_REGISTRATION_TOKEN, push_token);
+            if (!TextUtils.isEmpty(push_token)) {
+                Log.d(TAG, "Push token is present, PUSH workflow will be used. " + push_token);
+                requestParams.put(BaseService.PARAM_PUSH_REGISTRATION_TOKEN, push_token);
+            }
+            else
+                Log.d(TAG, "Push token not present");
             String deviceLanguage = DeviceProperties.getLanguage();
             if(!TextUtils.isEmpty(deviceLanguage))
                 requestParams.put(BaseService.PARAM_LANGUAGE, deviceLanguage);

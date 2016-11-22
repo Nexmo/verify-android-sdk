@@ -70,7 +70,7 @@ public abstract class BaseService<T extends BaseResponse> extends Service {
     public static final String PARAM_COMMAND = "cmd";
     public static final String PARAM_COMMAND_CANCEL = "cancel";
     public static final String PARAM_COMMAND_SKIP = "trigger_next_event";
-    public static final String PARAM_GCM_REGISTRATION_TOKEN = "push_token";
+    public static final String PARAM_PUSH_REGISTRATION_TOKEN = "push_token";
 
     /** HTTP response parameters. */
     public static final String PARAM_RESULT_CODE = "result_code";
