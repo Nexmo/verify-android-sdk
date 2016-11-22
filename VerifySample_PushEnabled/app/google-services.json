@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "710380159194",
+    "firebase_url": "https://midyear-courage-146316.firebaseio.com",
+    "project_id": "midyear-courage-146316",
+    "storage_bucket": "midyear-courage-146316.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:710380159194:android:59ee9fccb00d5aa5",
+        "android_client_info": {
+          "package_name": "com.nexmo.sdk.sample.verifysample_pushenabled"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "710380159194-rv9igpo0nev2688uu2ec38ogcc5dnp4i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4FpgZm_62BXG25b7HHVtR6SwdEKbuJgQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    buildToolsVersion "24.0.3"
 
     repositories {
         mavenCentral()
@@ -11,9 +11,10 @@ android {
     defaultConfig {
         applicationId "com.nexmo.sdk.sample.verifysample_pushenabled"
         minSdkVersion 11
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -24,9 +25,9 @@ android {
 }
 
 dependencies {
-
-    compile 'com.android.support:appcompat-v7:22.1.1'
-    compile 'com.nexmo:verify:3.0.0'
+    compile 'com.android.support:appcompat-v7:23.1.0'
     compile 'com.google.code.gson:gson:2.3.1'
-    compile 'com.google.android.gms:play-services-gcm:7.8.0'
+    compile 'com.nexmo:verify:4.0.0'
+    compile 'com.google.firebase:firebase-messaging:9.8.0'
 }
+apply plugin: 'com.google.gms.google-services'

@@ -28,17 +28,12 @@
             android:label="@string/check_code_fragment_name"
             android:parentActivityName=".MainActivity" >
         </activity>
+
         <service
-            android:name="com.nexmo.sdk.sample.verifysample_pushenabled.gcm.GcmInstanceIDListenerService"
-            android:exported="false">
+            android:name="com.nexmo.sdk.sample.verifysample_pushenabled.push.MyFirebaseInstanceIDService">
             <intent-filter>
-                <action android:name="com.google.android.gms.iid.InstanceID"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
-        </service>
-        <service
-            android:name="com.nexmo.sdk.sample.verifysample_pushenabled.gcm.GcmRegistrationIntentService"
-            android:enabled="true"
-            android:exported="false">
         </service>
     </application>
 

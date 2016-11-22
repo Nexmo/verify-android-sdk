@@ -14,13 +14,11 @@
 package com.nexmo.sdk.sample.verifysample_pushenabled;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.nexmo.sdk.sample.verifysample_pushenabled.fragment.MainFragment;
-import com.nexmo.sdk.sample.verifysample_pushenabled.gcm.GcmRegistrationIntentService;
 
 public class MainActivity extends Activity {
 
@@ -33,20 +31,7 @@ public class MainActivity extends Activity {
             setContentView(R.layout.activity_main);
             if (savedInstanceState == null)
                 getFragmentManager().beginTransaction().add(R.id.container, new MainFragment()).commit();
-            registerGcm();
         }
-    }
-
-    /**
-     * Get the GCM registration token.
-     * You can choose to store this value, or persist  a boolean GCM_REGISTRATION_TOKEN_OBTAINED and just call GCM register
-     * when needed.
-     */
-    private void registerGcm() {
-        Intent intent = new Intent(this, GcmRegistrationIntentService.class);
-        intent.setAction(GcmRegistrationIntentService.ACTION_REGISTER);
-        intent.putExtra(GcmRegistrationIntentService.INTENT_EXTRA_SENDER_ID, Config.PushSenderID);
-        startService(intent);
     }
 
 }

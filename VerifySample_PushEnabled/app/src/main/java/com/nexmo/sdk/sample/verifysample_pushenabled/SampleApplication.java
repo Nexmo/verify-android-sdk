@@ -24,8 +24,10 @@ import android.util.Log;
 
 import com.nexmo.sdk.NexmoClient;
 import com.nexmo.sdk.core.client.ClientBuilderException;
-import com.nexmo.sdk.sample.verifysample_pushenabled.gcm.GcmRegistrationIntentService;
+import com.nexmo.sdk.sample.verifysample_pushenabled.push.MyFirebaseInstanceIDService;
 import com.nexmo.sdk.verify.client.VerifyClient;
+
+import static com.nexmo.sdk.sample.verifysample_pushenabled.push.MyFirebaseInstanceIDService.INTENT_EXTRA_PUSH_TOKEN;
 
 /**
  * Application entry-point used for maintaining global verifyClient instance state.
@@ -35,7 +37,7 @@ import com.nexmo.sdk.verify.client.VerifyClient;
 public class SampleApplication extends Application {
 
     public static final String TAG = SampleApplication.class.getSimpleName();
-    private BroadcastReceiver mRegistrationBroadcastReceiver;
+    private BroadcastReceiver pushRegistrationBroadcastReceiver;
     private VerifyClient verifyClient;
     private NexmoClient nexmoClient;
 
@@ -76,18 +78,23 @@ public class SampleApplication extends Application {
         }
         this.verifyClient = new VerifyClient(nexmoClient);
 
-        if (TextUtils.isEmpty(Config.PushSenderID))
-            Log.e(TAG, "You haven't provided a valid SENDER_ID for GCM to be enabled.");
-        else {
-            mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    if (intent.hasExtra(GcmRegistrationIntentService.INTENT_EXTRA_PUSH_TOKEN))
-                        nexmoClient.setGcmRegistrationToken(intent.getStringExtra(GcmRegistrationIntentService.INTENT_EXTRA_PUSH_TOKEN));
-                }
-            };
-            LocalBroadcastManager.getInstance(this).registerReceiver(
-                    mRegistrationBroadcastReceiver, new IntentFilter(GcmRegistrationIntentService.REGISTRATION_COMPLETE));
+        //update push token on each refresh
+        pushRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.hasExtra(INTENT_EXTRA_PUSH_TOKEN))
+                    setFirebasePushToken(intent.getStringExtra(INTENT_EXTRA_PUSH_TOKEN));
+            }
+        };
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                pushRegistrationBroadcastReceiver,
+                new IntentFilter(MyFirebaseInstanceIDService.REGISTRATION_COMPLETE));
+    }
+
+    private void setFirebasePushToken(final String token) {
+        if (this.nexmoClient != null) {
+            Log.d(TAG, "Firebase push token refresh " + token);
+            this.nexmoClient.setPushRegistrationToken(token);
         }
     }
 
